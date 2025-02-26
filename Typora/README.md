@@ -1,8 +1,10 @@
 # 推荐设置
 
-![image-20250222195824150](https://cdn.jsdelivr.net/gh/huangcancan-xbc/Drawing-bed@master/Typora/image-20250222195824150.png)
+![](https://github.com/huangcancan-xbc/Drawing-bed/blob/master/Typora/Typora%E6%96%87%E4%BB%B6%E8%AE%BE%E7%BD%AE20250226225417188.png?raw=true)
 
-![image-20250222195828833](https://cdn.jsdelivr.net/gh/huangcancan-xbc/Drawing-bed@master/Typora/image-20250222195828833.png)
+![image-20250222195824150](https://cdn.jsdelivr.net/gh/huangcancan-xbc/Drawing-bed@master/Typora/image-20250222195824150.png)  
+
+![image-20250226225639349](https://cdn.jsdelivr.net/gh/huangcancan-xbc/Drawing-bed@master/Typora/20250226225639465.png)
 
 ![image-20250222195934213](https://cdn.jsdelivr.net/gh/huangcancan-xbc/Drawing-bed@master/Typora/image-20250222195934213.png)
 
