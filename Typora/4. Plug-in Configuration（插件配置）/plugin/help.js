@@ -30,21 +30,24 @@ class helpPlugin extends BasePlugin {
     process = () => {
         this.utils.eventHub.addEventListener(this.utils.eventHub.eventType.allPluginsHadInjected, () => {
             const versionText = this.i18n.t("currentVersion")
+            const actUpdate = this.staticActions.find(e => e.act_value === "update_plugin")
+            const actPreferences = this.staticActions.find(e => e.act_value === "preferences")
             this.updater = this.utils.getPlugin("updater")
             this.preferences = this.utils.getPlugin("preferences")
-            this.staticActions[0].act_name += this.version ? `（${versionText}：${this.version}）` : ""
-            this.staticActions[0].act_hidden = !this.updater
-            this.staticActions[1].act_hidden = !this.preferences
+
+            actUpdate.act_name += this.version ? `（${versionText}：${this.version}）` : ""
+            actUpdate.act_hidden = !this.updater
+            actPreferences.act_hidden = !this.preferences
         })
     }
 
     getInfo = async () => {
-        const { current: theme } = await JSBridge.invoke("setting.getThemes");
-        const list = plugins => Object.values(plugins).map(e => e.fixedName);
+        const { current: theme } = await JSBridge.invoke("setting.getThemes")
+        const getFixedName = plugins => Object.values(plugins).map(e => e.fixedName)
         const plugins = [
-            ...list(this.utils.getAllPlugins()),
-            ...list(this.utils.getAllCustomPlugins()),
-        ];
+            ...getFixedName(this.utils.getAllPlugins()),
+            ...getFixedName(this.utils.getAllCustomPlugins()),
+        ]
         return {
             typoraVersion: this.utils.typoraVersion,
             nodeVersion: this.utils.nodeVersion,
@@ -74,9 +77,8 @@ class helpPlugin extends BasePlugin {
     }
 
     showSetting = async () => {
-        const [base, custom] = await Promise.all([this.utils.runtime.readBasePluginSetting(), this.utils.runtime.readCustomPluginSetting()])
-        const toTextarea = setting => ({ label: "", type: "textarea", rows: 15, content: this.utils.stringifyToml(setting) })
-        const components = [toTextarea(base), toTextarea(custom)]
+        const settings = await Promise.all([this.utils.runtime.readBasePluginSetting(), this.utils.runtime.readCustomPluginSetting()])
+        const components = settings.map(s => ({ label: "", type: "textarea", rows: 15, content: this.utils.stringifyToml(s) }))
         const title = this.i18n.t("act.show_setting")
         const op = { title, components, width: "600px" }
         await this.utils.dialog.modalAsync(op)
@@ -85,7 +87,6 @@ class helpPlugin extends BasePlugin {
     about = () => {
         const title = this.i18n.t("act.about")
         const leaveWord = this.i18n.t("leaveWord")
-
         const copyright = `<p style="text-align: center; margin-top: 2em;">© Designed with ♥ by <a class="plu-github-me">obgnail</a> | Open Source on <a class="plu-github">GitHub</a> | <a class="plu-donate">Donate</a></p>`
         const label = [leaveWord, copyright].map(e => `<p style="font-size: 1.2em">${e}</p>`).join("");
         const onclick = ev => {
@@ -122,7 +123,7 @@ class helpPlugin extends BasePlugin {
 
             const title = this.i18n.t("uninstall.ok")
             const message = this.i18n.t("uninstall.okMsg")
-            const confirm = this.i18n.seek("global", "confirm")
+            const confirm = this.i18n._t("global", "confirm")
             const op = { type: "info", title, message, buttons: [confirm] }
             await this.utils.showMessageBox(op)
             this.utils.restartTypora(false)
@@ -207,9 +208,9 @@ class helpPlugin extends BasePlugin {
         const map = {
             open_setting_folder: () => this.utils.runtime.openSettingFolder(),
             backup_setting_file: () => this.utils.runtime.backupSettingFile(),
-            set_user_styles: () => this.utils.showInFinder(this.utils.joinPath("./plugin/global/user_styles/请读我.md")),
-            new_custom_plugin: () => this.utils.showInFinder(this.utils.joinPath("./plugin/custom/请读我.md")),
-            json_rpc: () => this.utils.showInFinder(this.utils.joinPath("./plugin/json_rpc/请读我.md")),
+            set_user_styles: () => this.utils.showInFinder(this.utils.joinPath("./plugin/global/user_styles/README.md")),
+            new_custom_plugin: () => this.utils.showInFinder(this.utils.joinPath("./plugin/custom/README.md")),
+            json_rpc: () => this.utils.showInFinder(this.utils.joinPath("./plugin/json_rpc/README.md")),
             github_picture_bed: () => this.utils.openUrl("https://github.com/obgnail/typora_image_uploader"),
             update_plugin: () => this.updater && this.updater.call(),
             preferences: () => this.preferences && this.preferences.call(),

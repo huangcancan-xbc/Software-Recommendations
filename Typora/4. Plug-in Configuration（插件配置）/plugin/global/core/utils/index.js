@@ -372,24 +372,31 @@ class utils {
     }
 
     ////////////////////////////// business file operation //////////////////////////////
+    /**
+     * @param {boolean} shouldSave - Whether to save the content.
+     * @param {string} contentType - The content type (e.g., 'markdown', 'html').
+     * @param {boolean} skipSetContent - Whether to skip setting the content.
+     * @param {any} saveContext - Contextual information for saving (optional).
+     * @returns {string} - The content of the editor.
+     */
+    static getCurrentFileContent = (shouldSave, contentType, skipSetContent, saveContext) => File.sync(shouldSave, contentType, skipSetContent, saveContext)
+
     static editCurrentFile = async (replacement, reloadContent = true) => {
         await this.fixScrollTop(async () => {
             const bak = File.presentedItemChanged
             File.presentedItemChanged = this.noop
 
             const filepath = this.getFilePath()
-            const content = filepath
-                ? await FS.promises.readFile(filepath, "utf-8")
-                : await File.getContent()
-            const replaced = typeof replacement === "string"
-                ? replacement
-                : await replacement(content)
+            const content = this.getCurrentFileContent()
+            const replaced = replacement instanceof Function
+                ? await replacement(content)
+                : replacement
             if (filepath) {
                 const ok = await this.writeFile(filepath, replaced)
                 if (!ok) return
             }
             if (reloadContent) {
-                File.reloadContent(replaced, { fromDiskChange: false })
+                File.reloadContent(replaced, { delayRefresh: true, skipChangeCount: true, skipStore: true })
             }
 
             setTimeout(() => File.presentedItemChanged = bak, 1500)
@@ -450,7 +457,7 @@ class utils {
         filename = filename || File.getFileName() || (new Date()).getTime().toString() + ".md";
         const dirPath = this.getFilePath() ? this.getCurrentDirPath() : this.getMountFolder();
         if (!dirPath) {
-            alert(i18n.t("global", "unavailableOnBlankPage"))
+            alert(i18n.t("global", "error.onBlankPage"))
             return;
         }
         let filepath = PATH.resolve(dirPath, filename);
@@ -513,7 +520,7 @@ class utils {
         } catch (e) {
             const detail = e.toString()
             const confirm = i18n.t("global", "confirm")
-            const message = i18n.t("global", "writeFileFailed")
+            const message = i18n.t("global", "error.writingFileFailed")
             const op = { type: "error", title: "Typora Plugin", buttons: [confirm], message, detail }
             await this.showMessageBox(op)
         }
@@ -576,7 +583,7 @@ class utils {
             type = "info",
             title = "typora",
             message, detail,
-            buttons = [i18n.t("global","confirm"), i18n.t("global","cancel")],
+            buttons = [i18n.t("global", "confirm"), i18n.t("global", "cancel")],
             defaultId = 0,
             cancelId = 1,
             normalizeAccessKeys = true,

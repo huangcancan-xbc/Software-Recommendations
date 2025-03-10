@@ -1,14 +1,41 @@
 class autoNumberPlugin extends BasePlugin {
     beforeProcess = () => {
-        this.css_id = "plugin-auto-number-style";
+        this.css_id = this.utils.styleTemplater.getID(this.fixedName)
+        this.initCSS()
+    }
+
+    style = () => ({ textID: this.css_id, text: this.getResultStyle() })
+
+    process = () => {
+        this.utils.runtime.autoSaveConfig(this);
+        if (this.config.ENABLE_WHEN_EXPORT) {
+            new exportHelper(this).process();
+        }
+        if (this.config.ENABLE_IMAGE && this.config.SHOW_IMAGE_NAME) {
+            this.utils.eventHub.addEventListener(this.utils.eventHub.eventType.fileEdited, () => {
+                const images = this.utils.entities.querySelectorAllInWrite(".md-image:not([data-alt]) > img");
+                for (const image of images) {
+                    image.parentElement.dataset.alt = image.getAttribute("alt");
+                }
+            })
+        }
+    }
+
+    initCSS = layout => {
+        if (!layout) {
+            const selected = this.config.LAYOUTS.find(e => e.selected) || this.config.LAYOUTS[0]
+            layout = selected.layout
+        }
 
         this.base_css = `
-        #write { counter-reset: write-h2 Figures Tables Fences; }
-        #write > h1 { counter-reset: write-h2; }
-        #write > h2 { counter-reset: write-h3; }
-        #write > h3 { counter-reset: write-h4; }
-        #write > h4 { counter-reset: write-h5; }
-        #write > h5 { counter-reset: write-h6; }
+        :root { ${this._buildCSSVar(layout)} }
+
+        #write { counter-reset: content-h1 content-h2 image table fence; }
+        #write > h1 { counter-reset: content-h2; }
+        #write > h2 { counter-reset: content-h3; }
+        #write > h3 { counter-reset: content-h4; }
+        #write > h4 { counter-reset: content-h5; }
+        #write > h5 { counter-reset: content-h6; }
         
         @media print {
             pb { display: block; page-break-after: always; }
@@ -18,33 +45,40 @@ class autoNumberPlugin extends BasePlugin {
         }`
 
         this.content_css = `
-        #write > h2:before {
-            counter-increment: write-h2;
-            content: counter(write-h2) ". ";
+        #write > h1:before,
+        #write > h1.md-focus.md-heading:before {
+            counter-increment: content-h1;
+            content: var(--count-content-h1);
+        }
+        
+        #write > h2:before,
+        #write > h2.md-focus.md-heading:before {
+            counter-increment: content-h2;
+            content: var(--count-content-h2);
         }
         
         #write > h3:before,
         #write > h3.md-focus.md-heading:before {
-            counter-increment: write-h3;
-            content: counter(write-h2) "." counter(write-h3) " ";
+            counter-increment: content-h3;
+            content: var(--count-content-h3);
         }
         
         #write > h4:before,
         #write > h4.md-focus.md-heading:before {
-            counter-increment: write-h4;
-            content: counter(write-h2) "." counter(write-h3) "." counter(write-h4) " ";
+            counter-increment: content-h4;
+            content: var(--count-content-h4);
         }
         
         #write > h5:before,
         #write > h5.md-focus.md-heading:before {
-            counter-increment: write-h5;
-            content: counter(write-h2) "." counter(write-h3) "." counter(write-h4) "." counter(write-h5) " "
+            counter-increment: content-h5;
+            content: var(--count-content-h5);
         }
         
         #write > h6:before,
         #write > h6.md-focus.md-heading:before {
-            counter-increment: write-h6;
-            content: counter(write-h2) "." counter(write-h3) "." counter(write-h4) "." counter(write-h5) "." counter(write-h6) " "
+            counter-increment: content-h6;
+            content: var(--count-content-h6);
         }
         
         #write > h3.md-focus:before,
@@ -71,75 +105,85 @@ class autoNumberPlugin extends BasePlugin {
             visibility: inherit;
         }`
 
-        this.side_bar_css = `
-        .outline-content { counter-reset: outline-h2; }
+        this.outline_css = `
+        .outline-content { counter-reset: outline-h1 outline-h2; }
         .outline-h1 { counter-reset: outline-h2; }
         .outline-h2 { counter-reset: outline-h3; }
         .outline-h3 { counter-reset: outline-h4; }
         .outline-h4 { counter-reset: outline-h5; }
         .outline-h5 { counter-reset: outline-h6; }
         
+        .outline-content .outline-h1 .outline-label:before {
+            counter-increment: outline-h1;
+            content: var(--count-outline-h1);
+        }
+        
         .outline-content .outline-h2 .outline-label:before {
             counter-increment: outline-h2;
-            content: counter(outline-h2) ". ";
+            content: var(--count-outline-h2);
         }
         
         .outline-content .outline-h3 .outline-label:before {
             counter-increment: outline-h3;
-            content: counter(outline-h2) "." counter(outline-h3) " ";
+            content: var(--count-outline-h3);
         }
         
         .outline-content .outline-h4 .outline-label:before {
             counter-increment: outline-h4;
-            content: counter(outline-h2) "." counter(outline-h3) "." counter(outline-h4) " ";
+            content: var(--count-outline-h4);
         }
         
         .outline-content .outline-h5 .outline-label:before {
             counter-increment: outline-h5;
-            content: counter(outline-h2) "." counter(outline-h3) "." counter(outline-h4) "." counter(outline-h5) " ";
+            content: var(--count-outline-h5);
         }
         
         .outline-content .outline-h6 .outline-label:before {
             counter-increment: outline-h6;
-            content: counter(outline-h2) "." counter(outline-h3) "." counter(outline-h4) "." counter(outline-h5) "." counter(outline-h6) " ";
+            content: var(--count-outline-h6);
         }`
 
         this.toc_css = `
-        .md-toc-content { counter-reset: toc-h2; }
+        .md-toc-content { counter-reset: toc-h1 toc-h2; }
         .md-toc-h1 { counter-reset: toc-h2; }
         .md-toc-h2 { counter-reset: toc-h3; }
         .md-toc-h3 { counter-reset: toc-h4; }
         .md-toc-h4 { counter-reset: toc-h5; }
         .md-toc-h5 { counter-reset: toc-h6; }
         
+        .md-toc-content .md-toc-h1 a:before {
+            counter-increment: toc-h1;
+            content: var(--count-toc-h1);
+        }
+        
         .md-toc-content .md-toc-h2 a:before {
             counter-increment: toc-h2;
-            content: counter(toc-h2) ". ";
+            content: var(--count-toc-h2);
         }
         
         .md-toc-content .md-toc-h3 a:before {
             counter-increment: toc-h3;
-            content: counter(toc-h2) "." counter(toc-h3) " ";
+            content: var(--count-toc-h3);
         }
         
         .md-toc-content .md-toc-h4 a:before {
             counter-increment: toc-h4;
-            content: counter(toc-h2) "." counter(toc-h3) "." counter(toc-h4) " ";
+            content: var(--count-toc-h4);
         }
         
         .md-toc-content .md-toc-h5 a:before {
             counter-increment: toc-h5;
-            content: counter(toc-h2) "." counter(toc-h3) "." counter(toc-h4) "." counter(toc-h5) " ";
+            content: var(--count-toc-h5);
         }
         
         .md-toc-content .md-toc-h6 a:before {
             counter-increment: toc-h6;
-            content: counter(toc-h2) "." counter(toc-h3) "." counter(toc-h4) "." counter(toc-h5) "." counter(toc-h6) " ";
+            content: var(--count-toc-h6);
         }`
 
         const image_content = `
-            counter-increment: Figures;
-            content: "${this.config.NAMES.image} " counter(Figures) " " attr(data-alt);
+            counter-increment: image;
+            content: var(--count-image);
             font-family: ${this.config.FONT_FAMILY};
             display: block;
             text-align: ${this.config.ALIGN};
@@ -149,9 +193,9 @@ class autoNumberPlugin extends BasePlugin {
         this.image_export_css = `#write p:has(img:first-child)::after {${image_content}}`
 
         this.table_css = `
-        #write .table-figure::after {
-            counter-increment: Tables;
-            content: "${this.config.NAMES.table} " counter(Tables);
+        #write .table-figure::${this.config.POSITION_TABLE} {
+            counter-increment: table;
+            content: var(--count-table);
             font-family: ${this.config.FONT_FAMILY};
             display: block;
             text-align: ${this.config.ALIGN};
@@ -163,8 +207,8 @@ class autoNumberPlugin extends BasePlugin {
             margin-bottom: 2.4em;
         }
         #write .md-fences::after {
-            counter-increment: Fences;
-            content: "${this.config.NAMES.fence} " counter(Fences);
+            counter-increment: fence;
+            content: var(--count-fence);
             position: absolute;
             width: 100%;
             text-align: ${this.config.ALIGN};
@@ -179,37 +223,21 @@ class autoNumberPlugin extends BasePlugin {
         `
     }
 
-    style = () => ({ textID: this.css_id, text: this.getResultStyle() })
-
-    process = () => {
-        this.utils.runtime.autoSaveConfig(this);
-        if (this.config.ENABLE_WHEN_EXPORT) {
-            new exportHelper(this).process();
-        }
-        if (this.config.ENABLE_IMAGE && this.config.SHOW_IMAGE_NAME) {
-            this.utils.eventHub.addEventListener(this.utils.eventHub.eventType.fileEdited, () => {
-                const images = this.utils.entities.querySelectorAllInWrite(".md-image:not([data-alt]) > img");
-                for (const image of images) {
-                    image.parentElement.dataset.alt = image.getAttribute("alt");
-                }
-            })
-        }
-    }
-
     removeStyle = () => this.utils.removeStyle(this.css_id);
 
     getStyleString = (inExport = false) => {
-        const image_css = (inExport && this.utils.supportHasSelector) ? this.image_export_css : this.image_css;
-        const { ENABLE_CONTENT, ENABLE_SIDE_BAR, ENABLE_TOC, ENABLE_IMAGE, ENABLE_TABLE, ENABLE_FENCE } = this.config;
-        return [
+        const image_css = (inExport && this.utils.supportHasSelector) ? this.image_export_css : this.image_css
+        const { ENABLE_CONTENT, ENABLE_OUTLINE, ENABLE_TOC, ENABLE_IMAGE, ENABLE_TABLE, ENABLE_FENCE } = this.config
+        const css = [
             this.base_css,
             ENABLE_CONTENT ? this.content_css : "",
-            ENABLE_SIDE_BAR ? this.side_bar_css : "",
+            ENABLE_OUTLINE ? this.outline_css : "",
             ENABLE_TOC ? this.toc_css : "",
             ENABLE_IMAGE ? image_css : "",
             ENABLE_TABLE ? this.table_css : "",
             ENABLE_FENCE ? this.fence_css : "",
-        ].join("\n")
+        ]
+        return css.join("\n")
     }
 
     getResultStyle = toggle => {
@@ -225,26 +253,126 @@ class autoNumberPlugin extends BasePlugin {
         this.utils.insertStyle(this.css_id, css);
     }
 
-    getDynamicActions = () => this.i18n.fillActions([
-        { act_value: "set_outline", act_state: this.config.ENABLE_SIDE_BAR },
-        { act_value: "set_content", act_state: this.config.ENABLE_CONTENT },
-        { act_value: "set_toc", act_state: this.config.ENABLE_TOC },
-        { act_value: "set_table", act_state: this.config.ENABLE_TABLE },
-        { act_value: "set_image", act_state: this.config.ENABLE_IMAGE },
-        { act_value: "set_fence", act_state: this.config.ENABLE_FENCE },
-    ])
+    setLayout = layoutName => {
+        this.config.LAYOUTS = this.config.LAYOUTS.map(lo => {
+            lo.selected = lo.name === layoutName
+            return lo
+        })
+        this.initCSS()
+        const css = this.getStyleString()
+        this.utils.insertStyle(this.css_id, css)
+    }
+
+    getDynamicActions = () => {
+        const actSetLayoutPrefix = "set_layout@"
+        const layouts = this.config.LAYOUTS.map(lo => ({ act_name: lo.name, act_value: actSetLayoutPrefix + lo.name, act_state: lo.selected }))
+        return this.i18n.fillActions([
+            { act_value: "toggle_outline", act_state: this.config.ENABLE_OUTLINE },
+            { act_value: "toggle_content", act_state: this.config.ENABLE_CONTENT },
+            { act_value: "toggle_toc", act_state: this.config.ENABLE_TOC },
+            { act_value: "toggle_table", act_state: this.config.ENABLE_TABLE },
+            { act_value: "toggle_image", act_state: this.config.ENABLE_IMAGE },
+            { act_value: "toggle_fence", act_state: this.config.ENABLE_FENCE },
+            ...layouts,
+        ])
+    }
 
     call = action => {
         const callMap = {
-            set_outline: () => this.toggleSetting("ENABLE_SIDE_BAR"),
-            set_content: () => this.toggleSetting("ENABLE_CONTENT"),
-            set_toc: () => this.toggleSetting("ENABLE_TOC"),
-            set_table: () => this.toggleSetting("ENABLE_TABLE"),
-            set_image: () => this.toggleSetting("ENABLE_IMAGE"),
-            set_fence: () => this.toggleSetting("ENABLE_FENCE"),
+            toggle_outline: () => this.toggleSetting("ENABLE_OUTLINE"),
+            toggle_content: () => this.toggleSetting("ENABLE_CONTENT"),
+            toggle_toc: () => this.toggleSetting("ENABLE_TOC"),
+            toggle_table: () => this.toggleSetting("ENABLE_TABLE"),
+            toggle_image: () => this.toggleSetting("ENABLE_IMAGE"),
+            toggle_fence: () => this.toggleSetting("ENABLE_FENCE"),
+            set_layout: layoutName => this.setLayout(layoutName),
         }
-        const func = callMap[action];
-        func && func();
+        const [act, meta] = action.split("@")
+        const func = callMap[act]
+        if (func) {
+            func(meta)
+        }
+    }
+
+    _buildCSSVar = layout => {
+        const NAMES = {
+            c1: "content-h1",
+            c2: "content-h2",
+            c3: "content-h3",
+            c4: "content-h4",
+            c5: "content-h5",
+            c6: "content-h6",
+            o1: "outline-h1",
+            o2: "outline-h2",
+            o3: "outline-h3",
+            o4: "outline-h4",
+            o5: "outline-h5",
+            o6: "outline-h6",
+            t1: "toc-h1",
+            t2: "toc-h2",
+            t3: "toc-h3",
+            t4: "toc-h4",
+            t5: "toc-h5",
+            t6: "toc-h6",
+            t: "table",
+            f: "fence",
+            i: "image",
+        }
+        const STYLES = {
+            d: "decimal",
+            dlz: "decimal-leading-zero",
+            lr: "lower-roman",
+            ur: "upper-roman",
+            la: "lower-alpha",
+            ua: "upper-alpha",
+            lg: "lower-greek",
+            hs: "cjk-heavenly-stem",
+            eb: "cjk-earthly-branch",
+            cjk: "cjk-ideographic",  // cjk-decimal is experimental
+            scf: "simp-chinese-formal",
+            tcf: "trad-chinese-formal",
+            jf: "japanese-formal",
+            hi: "hiragana",
+            ka: "katakana",
+            di: "disc",
+            ci: "circle",
+            sq: "square",
+            no: "none",
+        }
+        const DEFAULT_STYLE = "d"
+
+        const byLength = (a, b) => b.length - a.length
+        const names = [...Object.keys(NAMES)].sort(byLength).join("|")
+        const styles = [...Object.keys(STYLES)].sort(byLength).join("|")
+        const regex = new RegExp(`\\{\\s*(${names})(?::(${styles}))?\\s*\\}`, "gi")
+
+        const buildCounter = (type, lo) => {
+            let start = 0
+            const content = []
+            for (const match of lo.matchAll(regex)) {
+                const [raw, name, style = DEFAULT_STYLE] = match
+                const idx = match.index
+                const text = lo.slice(start, idx)
+                if (text) {
+                    content.push(`"${text}"`)
+                }
+                content.push(`counter(${NAMES[name]}, ${STYLES[style]})`)
+                start = idx + raw.length
+            }
+            const remain = lo.slice(start)
+            if (remain) {
+                content.push(`"${remain}"`)
+            }
+            const val = content.length ? content.join(" ") : `""`
+            return `--count-${type}: ${val}`
+        }
+
+        const vars = Object.entries(layout).map(([type, lo]) => {
+            const extra = type === "image" ? ` " " attr(data-alt)` : ""
+            const counter = buildCounter(type, lo)
+            return counter + extra + ";"
+        })
+        return vars.join("\n")
     }
 }
 

@@ -18,16 +18,15 @@ class updaterPlugin extends BasePlugin {
             return
         }
 
-        const proxy = await this.getProxy()
+        const defaultProxy = await this.getProxy()
 
-        const title = this.i18n.t("networkProxy")
         const label = this.i18n.t("proxyUrl")
         const info = this.i18n.t("proxyUrlHint")
-        const components = [{ type: "input", value: proxy, label, info, placeholder: "http://127.0.0.1:7890" }]
-        const op = { title, components }
-        const { response, submit: [proxy_] } = await this.utils.dialog.modalAsync(op)
+        const components = [{ type: "input", value: defaultProxy, label, info, placeholder: "http://127.0.0.1:7890" }]
+        const op = { title: this.pluginName, components }
+        const { response, submit: [proxy] } = await this.utils.dialog.modalAsync(op)
         if (response === 1) {
-            await this.manualUpdate(proxy_)
+            await this.manualUpdate(proxy)
         }
     }
 
@@ -46,7 +45,7 @@ class updaterPlugin extends BasePlugin {
             failed: this.i18n.t("update.failed"),
             currentVersion: this.i18n.t("update.currentVersionInfo"),
             tryAgain: this.i18n.t("update.tryAgain"),
-            unknownError: this.i18n.t("update.unknownError"),
+            unknownError: this.i18n._t("global", "error.unknown"),
         }
 
         this.utils.notification.show(i18n.pleaseWait)
@@ -112,9 +111,9 @@ class updater {
         this.workDir = this.pkgPath.join(this.utils.tempFolder, "typora-plugin-updater");
         this.exclude = [
             "./plugin/global/user_styles",
-            "./plugin/window_tab/save_tabs.json",
             "./plugin/global/settings/settings.user.toml",
             "./plugin/global/settings/custom_plugin.user.toml",
+            "./plugin/window_tab/save_tabs.json",
             "./plugin/custom/plugins/reopenClosedFiles/remain.json",
             "./plugin/custom/plugins/scrollBookmarker/bookmark.json",
         ]
@@ -223,14 +222,13 @@ class updater {
         const oldFds = await this.pkgFsExtra.readdir(oldDir);
         const newFds = await this.pkgFsExtra.readdir(newDir);
 
-        const excludeFds = new Set();
-        newFds.forEach(file => excludeFds.add(file));
-
+        const excludeFds = new Set([...newFds])
         oldFds.forEach(name => {
             const exclude = excludeFds.has(name) || (this.pkgPath.extname(name) === ".js") && excludeFds.has(name.substring(0, name.lastIndexOf(".")))
-            if (exclude) return
-            const path = this.pkgPath.join(this.customPluginDir, name)
-            this.exclude.push(path)
+            if (!exclude) {
+                const path = this.pkgPath.join(this.customPluginDir, name)
+                this.exclude.push(path)
+            }
         })
 
         for (const file of this.exclude) {
@@ -252,8 +250,6 @@ class updater {
         await this.pkgFsExtra.emptyDir(this.workDir);
         if (this.latestVersionInfo) {
             await this.pkgFsExtra.writeJson(this.versionFile, this.latestVersionInfo);
-        } else {
-            await this.pkgFsExtra.remove(this.versionFile);
         }
     }
 }

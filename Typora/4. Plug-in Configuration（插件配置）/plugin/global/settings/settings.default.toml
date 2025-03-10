@@ -1,7 +1,7 @@
 #-------------------------------------------------------------------------
-#  请勿修改【settings.default.toml】文件，请阅读本目录下的【请读我.md】
-#  请勿修改【settings.default.toml】文件，请阅读本目录下的【请读我.md】
-#  请勿修改【settings.default.toml】文件，请阅读本目录下的【请读我.md】
+#  请勿修改【settings.default.toml】文件，请阅读本目录下的【README.md】
+#  请勿修改【settings.default.toml】文件，请阅读本目录下的【README.md】
+#  请勿修改【settings.default.toml】文件，请阅读本目录下的【README.md】
 #-------------------------------------------------------------------------
 
 
@@ -14,10 +14,11 @@
 ENABLE = true
 
 # ------------------- 语言 -------------------
-# 语言。目前支持如下语言
-#   auto
+# 语言
+#   auto: 跟随 Typora 语言设置
 #   en
 #   zh-CN
+#   zh-TW
 LOCALE = "auto"
 
 # ------------------- 插件兼容性 -------------------
@@ -353,16 +354,16 @@ BUILTIN = [
     # 占位符，不执行任何命令
     { name = "", disable = false, shell = "cmd/bash", cmd = "" },
     # 在资源管理器中打开当前文件所在目录
-    { name = "explorer", disable = false, shell = "powershell", cmd = "explorer $d" },
+    { name = "Explorer", disable = false, shell = "powershell", cmd = "explorer $d" },
     # 在 VS Code 中打开当前文件
-    { name = "vscode", disable = false, shell = "cmd/bash", cmd = "code $f" },
+    { name = "VScode", disable = false, shell = "cmd/bash", cmd = "code $f" },
     # 在 Windows Terminal 中打开当前文件所在目录
-    { name = "wt", disable = false, shell = "cmd/bash", cmd = "cd $d && wt" },
+    { name = "Windows Terminal", disable = false, shell = "cmd/bash", cmd = "cd $d && wt" },
     # 将当前挂载目录下的所有更改提交到 Git 仓库
-    { name = "git commit", disable = false, shell = "cmd/bash", cmd = 'cd $m && git add . && git commit -m "update"' },
+    { name = "Git Commit", disable = false, shell = "cmd/bash", cmd = 'cd $m && git add . && git commit -m "update"' },
     # 在 Total Commander 中打开当前文件，此命令默认禁用，需修改 Total Commander 的路径才能使用
     # https://xbeta.info/tc-help/totalcmd/CommandLineParameters.htm
-    { name = "tc", disable = true, shell = "cmd/bash", cmd = "D:\\software\\TotalCMD_64bit_11.03\\TOTALCMD64.EXE /O /T /P=L /L=$f" },
+    { name = "TotalCommander", disable = true, shell = "cmd/bash", cmd = "D:\\software\\TotalCMD_64bit_11.03\\TOTALCMD64.EXE /O /T /P=L /L=$f" },
 ]
 
 
@@ -976,35 +977,20 @@ DEFAULT_FENCE_OPTIONS = { duration = 500, initialExpandLevel = -1, colorFreezeLe
 #   请确保此处的代码块语言与 LANGUAGE 配置一致
 FENCE_TEMPLATE = """```markmap
 ---
-# 根节点默认文本（若内容存在根节点，则此选项失效）
 title: markmap
-# 配置:
 markmap:
-  # 是否允许缩放
   zoom: false
-  # 是否允许平移
   pan: false
-  # 节点最大长度（0则无长度限制）
   maxWidth: 0
-  # 节点水平间距
   spacingHorizontal: 80
-  # 节点垂直间距
   spacingVertical: 5
-  # 节点内部边距
   paddingX: 8
-  # 图形的窗口填充率
   fitRatio: 0.95
-  # 展开的最大节点级别（-1则展开全部）
   initialExpandLevel: -1
-  # 多少级开始固定分支颜色
   colorFreezeLevel: 6
-  # 颜色
   color: ["#4E79A7", "#F28E2C", "#E15759", "#76B7B2", "#59A14F", "#EDC949", "#AF7AA1", "#FF9DA7", "#9C755F", "#BAB0AB"]
-  # 动画持续时间
   duration: 500
-  # 图形高度
   height: 300px
-  # 背景色
   backgroundColor: "#F8F8F8"
 ---
 
@@ -1046,11 +1032,11 @@ ENABLE = true
 # 插件的名称，用于在插件列表中标识此插件（为空则使用默认名）
 NAME = ""
 
-# ------------------- 编号范围控制 -------------------
-# 启用侧边栏自动编号：是否在 Typora 的侧边栏（TOC 目录）中显示自动编号
+# ------------------- 编号元素 -------------------
+# 启用大纲自动编号：是否在 Typora 的侧边栏（TOC 目录）中显示自动编号
 #   true:  在侧边栏中显示编号
 #   false: 在侧边栏中不显示编号
-ENABLE_SIDE_BAR = true
+ENABLE_OUTLINE = true
 
 # 启用正文自动编号：是否在 Typora 正文内容中显示自动编号
 #   true:  在正文中显示编号
@@ -1062,7 +1048,6 @@ ENABLE_CONTENT = true
 #   false: 在 TOC 中不显示编号
 ENABLE_TOC = true
 
-# ------------------- 编号元素控制 -------------------
 # 启用表格自动编号：是否对文档中的表格进行自动编号
 #   true:  对表格进行编号
 #   false: 不对表格进行编号
@@ -1101,11 +1086,140 @@ FONT_FAMILY = "monospace"
 #   center: 编号显示在元素的中间
 ALIGN = "center"
 
-# 编号的下标名称：设置不同类型元素的编号前缀
-#   table:   表格的编号前缀
-#   image:   图片的编号前缀
-#   fence:   代码块的编号前缀
-NAMES = { table = "Table", image = "Figure", fence = "Fence" }
+# 表格编号的位置
+#   before: 先于表格出现
+#   after:  后于表格出现
+POSITION_TABLE = "after"
+
+# ------------------- 编号格式 -------------------
+# 编号格式定义：
+#   你可以在这里自定义不同元素的编号格式，支持的元素类型包括：
+#     - content-h1 ~ content-h6:  正文内容中的一级标题到六级标题
+#     - outline-h1 ~ outline-h6:  大纲视图中的一级标题到六级标题
+#     - toc-h1 ~ toc-h6:          TOC 中的一级标题到六级标题
+#     - table:                    表格
+#     - image:                    图片
+#     - fence:                    代码块
+#
+# 编号格式语法：
+#   借鉴了 Python 的 f-string 语法，它能让你轻松地组合文本和计数器。
+#   格式如下：
+#     "前缀{计数器名称:计数样式}后缀"
+#   例如：
+#     image = "图{i:cjk}"
+#   最终的图片编号是：
+#     图一, 图二, 图三, ...
+#   解释：
+#     - "图" 是前缀，表示编号前显示的文字。
+#     - "{i:cjk}" 是编号的核心：
+#       - i 是计数器名称，代表“图片”的计数器 (每张图片自动加 1)。
+#       - cjk 是计数样式，表示使用中文数字 (一, 二, 三, ...)。
+#     - 后缀为空，表示编号后没有文字。
+#
+#   组合多个计数器：
+#     你可以组合多个计数器和文本，创建复杂的编号格式。
+#     例如：content-h4 = "{c2:ua}-{c3:cjk}.{c4:ur}"
+#     如果当前是：第 2 个二级标题，第 5 个三级标题，第 3 个四级标题，那么最终的四级标题编号会是：`B-五.III`
+#     解释：
+#       - {c2:ua} 表示使用大写英文字母计数二级标题 (A, B, C...)，结果为 B。
+#       - {c3:cjk} 表示使用中文数字计数三级标题 (一, 二, 三...)，结果为 五。
+#       - {c4:ur} 表示使用大写罗马数字计数四级标题 (I, II, III...)，结果为 III。
+#
+# 可用的计数器名称：
+#   - c1 ~ c6: 分别用于正文中 1 级到 6 级标题。
+#   - o1 ~ o6: 分别用于大纲中 1 级到 6 级标题。
+#   - t1 ~ t6: 分别用于目录中 1 级到 6 级标题。
+#   - t: 用于表格的计数。每插入一个表格，计数器就加 1。
+#   - i: 用于图片的计数。
+#   - f: 用于代码块的计数。
+#
+# 可用的计数样式：
+#   - d:   阿拉伯数字 (1, 2, 3, ...)  *默认值。{c2:d}可以省略为{c2}*
+#   - dlz: 前导零的阿拉伯数字 (01, 02, 03, ...)
+#   - lr:  小写罗马数字 (i, ii, iii, iv, v, ...)
+#   - ur:  大写罗马数字 (I, II, III, IV, V, ...)
+#   - la:  小写英文字母 (a, b, c, d, e, ...)
+#   - ua:  大写英文字母 (A, B, C, D, E, ...)
+#   - lg:  小写希腊字母 (α, β, γ, δ, ε, ...)
+#   - hs:  天干 (甲, 乙, 丙, 丁, ...)
+#   - eb:  地支 (子, 丑, 寅, 卯, ...)
+#   - cjk: 汉字数字 (一, 二, 三, 四, ...)
+#   - scf: 简体中文大写数字 (壹, 贰, 叁, 肆, ...)  *注意：仅 Typora 新版本支持*
+#   - tcf: 繁体中文大写数字 (壹, 贰, 叁, 肆, ...)  *注意：仅 Typora 新版本支持*
+#   - jf:  日文汉字大写数字 (壱, 弐, 参, 肆, ...)  *注意：仅 Typora 新版本支持*
+#   - hi:  平假名 (あ, い, う, ...)             *注意：仅 Typora 新版本支持*
+#   - ka:  片假名 (ア, イ, ウ, ...)             *注意：仅 Typora 新版本支持*
+#   - di:  实心圆点 (●)
+#   - ci:  空心圆点 (○)
+#   - sq:  实心方块 (■)
+#   - no:  无 (不显示编号)
+
+# 布局配置：
+#   你可以定义多个布局，并选择一个作为当前使用的布局。
+#   每个布局都包含了一套完整的编号格式定义。
+[[auto_number.LAYOUTS]]
+# 布局名称，用于标识不同的布局
+name = "Layout::Decimal"
+# 是否选中此布局。如果为 true，则使用此布局的编号格式。
+selected = true
+# 布局的具体设置
+[auto_number.LAYOUTS.layout]
+content-h1 = ""
+content-h2 = "{c2}. "
+content-h3 = "{c2}.{c3} "
+content-h4 = "{c2}.{c3}.{c4} "
+content-h5 = "{c2}.{c3}.{c4}.{c5} "
+content-h6 = "{c2}.{c3}.{c4}.{c5}.{c6} "
+
+outline-h1 = ""
+outline-h2 = "{o2}. "
+outline-h3 = "{o2}.{o3} "
+outline-h4 = "{o2}.{o3}.{o4} "
+outline-h5 = "{o2}.{o3}.{o4}.{o5} "
+outline-h6 = "{o2}.{o3}.{o4}.{o5}.{o6} "
+
+toc-h1 = ""
+toc-h2 = "{t2}. "
+toc-h3 = "{t2}.{t3} "
+toc-h4 = "{t2}.{t3}.{t4} "
+toc-h5 = "{t2}.{t3}.{t4}.{t5} "
+toc-h6 = "{t2}.{t3}.{t4}.{t5}.{t6} "
+
+table = "Table {t}"
+image = "Image {i}"
+fence = "Fence {f}"
+
+[[auto_number.LAYOUTS]]
+# 布局名称，用于标识不同的布局
+name = "Layout::CJK"
+# 是否选中此布局。如果为 true，则使用此布局的编号格式。
+selected = false
+# 布局的具体设置
+[auto_number.LAYOUTS.layout]
+content-h1 = "{c1:cjk}、"
+content-h2 = "（{c2:cjk}）"
+content-h3 = "\\A0\\A0{c3}."    # \A0 表示空格
+content-h4 = "\\A0\\A0（{c4}）"
+content-h5 = "\\A0\\A0{c5}）"
+content-h6 = "\\A0\\A0{c6:ua}."
+
+outline-h1 = "{o1:cjk}、"
+outline-h2 = "（{o2:cjk}）"
+outline-h3 = "{o3}."
+outline-h4 = "（{o4}）"
+outline-h5 = "{o5}）"
+outline-h6 = "{o6:ua}."
+
+toc-h1 = "{t1:cjk}、"
+toc-h2 = "（{t2:cjk}）"
+toc-h3 = "{t3}."
+toc-h4 = "（{t4}）"
+toc-h5 = "{t5}）"
+toc-h6 = "{t6:ua}."
+
+table = "表 {t}"
+image = "图 {i}"
+fence = "代码 {f}"
 
 
 ################### fence_enhance ###################
@@ -1181,15 +1295,15 @@ ENABLE_INDENT = true
 #   false: 禁用折叠功能，不显示折叠按钮
 ENABLE_FOLD = true
 
-# 代码块折叠形式：设置代码块折叠时的显示方式
-#   hidden:  隐藏除第一行外的所有行
-#   scroll:  添加滚动条，仅显示一行代码，超出部分通过滚动条查看。（不推荐使用，用户体验较差）
-FOLD_OVERFLOW = "hidden"
-
-# 默认折叠所有代码块：是否在加载时默认折叠所有代码块
-#   true:  默认折叠所有代码块
+# 默认折叠代码块：是否在加载时默认折叠代码块
+# 若置为 false，则选项 DEFAULT_FOLD_THRESHOLD 失效
+#   true:  默认折叠代码块
 #   false: 默认不折叠代码块
-FOLD_DEFAULT = false
+DEFAULT_FOLD = false
+
+# 代码块折叠行数：开启默认折叠后，仅当代码块行数大于此值时才会被默认折叠
+#   设置为 0 则所有代码块都会被折叠
+DEFAULT_FOLD_THRESHOLD = 0
 
 # 操作成功时，icon提示的保持时间（单位：毫秒）：设置点击按钮后，图标变化（例如复制成功时的勾选标记）的显示时间
 #   单位为毫秒，例如：1000 表示 1 秒
@@ -1411,8 +1525,9 @@ NAME = ""
 
 # ------------------- 图片下载 -------------------
 # 是否下载网络图片：控制是否下载网络图片，并将其转换为 base64 编码
+# 若设置为 false，DOWNLOAD_THREADS 配置将失效
 #   true:  下载网络图片，并转换为 base64 编码。若网络不稳定，可能会导致导出超时
-#   false: 不下载网络图片，保留原有链接。若设置为 false，DOWNLOAD_THREADS 配置将失效
+#   false: 不下载网络图片，保留原有链接
 DOWNLOAD_NETWORK_IMAGE = false
 
 # 下载网络图片的并发量：设置下载网络图片时的并发线程数
@@ -1473,6 +1588,10 @@ TOOLBAR = [
     "emphasis", "blur", "increaseLetterSpacing", "decreaseLetterSpacing", "increaseSize", "decreaseSize", "family",
     "foregroundColor", "backgroundColor", "borderColor", "setBrush", "useBrush", "erase", "blank", "move", "close"
 ]
+
+# 默认的格式刷
+#   填入 CSS 语句。例如："color:#FF0000; text-decoration:line-through;"
+DEFAULT_FORMAT_BRUSH = ""
 
 # ------------------- 快捷键 -------------------
 # 将设置样式的动作映射为快捷键，方便快速应用样式
@@ -1672,45 +1791,46 @@ FUNC_PARAM_SEPARATOR = "_"
 #                   - 若 type 为 command，则填入逻辑函数
 #                   - 若 type 为 gen-snp，则填入返回字符串的函数
 COMMANDS = [
-    { enable = true, type = "command", icon = "📝", keyword = "H1", hint = "一级标题", callback = "() => File.editor.stylize.changeBlock('header1', undefined, true)" },
-    { enable = true, type = "command", icon = "📝", keyword = "H2", hint = "二级标题", callback = "() => File.editor.stylize.changeBlock('header2', undefined, true)" },
-    { enable = true, type = "command", icon = "📝", keyword = "H3", hint = "三级标题", callback = "() => File.editor.stylize.changeBlock('header3', undefined, true)" },
-    { enable = true, type = "command", icon = "📝", keyword = "H4", hint = "四级标题", callback = "() => File.editor.stylize.changeBlock('header4', undefined, true)" },
-    { enable = true, type = "command", icon = "📝", keyword = "H5", hint = "五级标题", callback = "() => File.editor.stylize.changeBlock('header5', undefined, true)" },
-    { enable = true, type = "command", icon = "📝", keyword = "H6", hint = "六级标题", callback = "() => File.editor.stylize.changeBlock('header6', undefined, true)" },
-    { enable = true, type = "command", icon = "📝", keyword = "Paragraph", hint = "段落", callback = "() => File.editor.stylize.changeBlock('paragraph')" },
-    { enable = true, type = "command", icon = "📝", keyword = "IncreaseHeaderLevel", hint = "提升标题等级", callback = "() => File.editor.stylize.increaseHeaderLevel()" },
-    { enable = true, type = "command", icon = "📝", keyword = "DecreaseHeaderLevel", hint = "降低标题等级", callback = "() => File.editor.stylize.decreaseHeaderLevel()" },
-    { enable = true, type = "command", icon = "📝", keyword = "Table", hint = "表格", callback = "() => File.editor.tableEdit.insertTable()" },
-    { enable = true, type = "command", icon = "📝", keyword = "BlockCode", hint = "代码块", callback = "() => File.editor.stylize.toggleFences()" },
-    { enable = true, type = "command", icon = "📝", keyword = "BlockMath", hint = "公式块", callback = "() => File.editor.stylize.toggleMathBlock()" },
-    { enable = true, type = "command", icon = "📝", keyword = "BlockQuote", hint = "引用", callback = "() => File.editor.stylize.toggleIndent('blockquote')" },
-    { enable = true, type = "command", icon = "📝", keyword = "OrderedList", hint = "有序列表", callback = "() => File.editor.stylize.toggleIndent('ol')" },
-    { enable = true, type = "command", icon = "📝", keyword = "UnorderedList", hint = "无序列表", callback = "() => File.editor.stylize.toggleIndent('ul')" },
-    { enable = true, type = "command", icon = "📝", keyword = "Tasklist", hint = "任务列表", callback = "() => File.editor.stylize.toggleIndent('tasklist')" },
-    { enable = true, type = "command", icon = "📝", keyword = "ListMoreIndent", hint = "增加列表缩进", callback = "() => File.editor.UserOp.moreIndent(File.editor)" },
-    { enable = true, type = "command", icon = "📝", keyword = "ListLessIndent", hint = "减少列表缩进", callback = "() => File.editor.UserOp.lessIndent(File.editor)" },
-    { enable = true, type = "command", icon = "📝", keyword = "InsertParagraphAbove", hint = "在上方插入段落", callback = "() => File.editor.UserOp.insertParagraph(true)" },
-    { enable = true, type = "command", icon = "📝", keyword = "InsertParagraphBelow", hint = "在下方插入段落", callback = "() => File.editor.UserOp.insertParagraph(false)" },
-    { enable = true, type = "command", icon = "📝", keyword = "DefLink", hint = "链接引用", callback = "() => File.editor.stylize.insertBlock('def_link')" },
-    { enable = true, type = "command", icon = "📝", keyword = "DefFootnote", hint = "脚注", callback = "() => File.editor.stylize.insertBlock('def_footnote')" },
-    { enable = true, type = "command", icon = "📝", keyword = "Hr", hint = "水平分割线", callback = "() => File.editor.stylize.insertBlock('hr')" },
-    { enable = true, type = "command", icon = "📝", keyword = "TOC", hint = "内容目录", callback = "() => File.editor.stylize.insertBlock('toc')" },
-    { enable = true, type = "command", icon = "📝", keyword = "FrontMatter", hint = "元信息", callback = "() => File.editor.stylize.insertMetaBlock()" },
-    { enable = true, type = "command", icon = "👕", keyword = "Strong", hint = "粗体", callback = "() => File.editor.stylize.toggleStyle('strong')" },
-    { enable = true, type = "command", icon = "👕", keyword = "Em", hint = "斜体", callback = "() => File.editor.stylize.toggleStyle('em')" },
-    { enable = true, type = "command", icon = "👕", keyword = "Underline", hint = "下划线", callback = "() => File.editor.stylize.toggleStyle('underline')" },
-    { enable = true, type = "command", icon = "👕", keyword = "Code", hint = "代码", callback = "() => File.editor.stylize.toggleStyle('code')" },
-    { enable = true, type = "command", icon = "👕", keyword = "InlineMath", hint = "内联公式", callback = "() => File.editor.stylize.toggleStyle('inline_math')" },
-    { enable = true, type = "command", icon = "👕", keyword = "Delete", hint = "删除线", callback = "() => File.editor.stylize.toggleStyle('del')" },
-    { enable = true, type = "command", icon = "👕", keyword = "Highlight", hint = "高亮", callback = "() => File.editor.stylize.toggleStyle('highlight')" },
-    { enable = true, type = "command", icon = "👕", keyword = "Superscript", hint = "上标", callback = "() => File.editor.stylize.toggleStyle('superscript')" },
-    { enable = true, type = "command", icon = "👕", keyword = "Subscript", hint = "下标", callback = "() => File.editor.stylize.toggleStyle('subscript')" },
-    { enable = true, type = "command", icon = "👕", keyword = "Footnote", hint = "脚注", callback = "() => File.editor.stylize.toggleStyle('footnote')" },
-    { enable = true, type = "command", icon = "👕", keyword = "Comment", hint = "注释", callback = "() => File.editor.stylize.toggleStyle('comment')" },
-    { enable = true, type = "command", icon = "👕", keyword = "Link", hint = "超链接", callback = "() => File.editor.stylize.toggleStyle('link')" },
-    { enable = true, type = "command", icon = "👕", keyword = "Image", hint = "图像", callback = "() => File.editor.stylize.toggleStyle('image')" },
-    { enable = true, type = "command", icon = "👕", keyword = "ClearStyle", hint = "清除样式", callback = "() => File.editor.stylize.clearStyle()" },
+    { enable = true, type = "command", icon = "📝", keyword = "H1", callback = "() => File.editor.stylize.changeBlock('header1', undefined, true)" },
+    { enable = true, type = "command", icon = "📝", keyword = "H2", callback = "() => File.editor.stylize.changeBlock('header2', undefined, true)" },
+    { enable = true, type = "command", icon = "📝", keyword = "H3", callback = "() => File.editor.stylize.changeBlock('header3', undefined, true)" },
+    { enable = true, type = "command", icon = "📝", keyword = "H4", callback = "() => File.editor.stylize.changeBlock('header4', undefined, true)" },
+    { enable = true, type = "command", icon = "📝", keyword = "H5", callback = "() => File.editor.stylize.changeBlock('header5', undefined, true)" },
+    { enable = true, type = "command", icon = "📝", keyword = "H6", callback = "() => File.editor.stylize.changeBlock('header6', undefined, true)" },
+    { enable = true, type = "command", icon = "📝", keyword = "Paragraph", callback = "() => File.editor.stylize.changeBlock('paragraph')" },
+    { enable = true, type = "command", icon = "📝", keyword = "IncreaseHeaderLevel", callback = "() => File.editor.stylize.increaseHeaderLevel()" },
+    { enable = true, type = "command", icon = "📝", keyword = "DecreaseHeaderLevel", callback = "() => File.editor.stylize.decreaseHeaderLevel()" },
+    { enable = true, type = "command", icon = "📝", keyword = "Table", callback = "() => File.editor.tableEdit.insertTable()" },
+    { enable = true, type = "command", icon = "📝", keyword = "BlockCode", callback = "() => File.editor.stylize.toggleFences()" },
+    { enable = true, type = "command", icon = "📝", keyword = "BlockMath", callback = "() => File.editor.stylize.toggleMathBlock()" },
+    { enable = true, type = "command", icon = "📝", keyword = "BlockQuote", callback = "() => File.editor.stylize.toggleIndent('blockquote')" },
+    { enable = true, type = "command", icon = "📝", keyword = "Callouts", callback = "() => File.editor.stylize.insertAlert('NOTE')" },
+    { enable = true, type = "command", icon = "📝", keyword = "OrderedList", callback = "() => File.editor.stylize.toggleIndent('ol')" },
+    { enable = true, type = "command", icon = "📝", keyword = "UnorderedList", callback = "() => File.editor.stylize.toggleIndent('ul')" },
+    { enable = true, type = "command", icon = "📝", keyword = "TaskList", callback = "() => File.editor.stylize.toggleIndent('tasklist')" },
+    { enable = true, type = "command", icon = "📝", keyword = "ListMoreIndent", callback = "() => File.editor.UserOp.moreIndent(File.editor)" },
+    { enable = true, type = "command", icon = "📝", keyword = "ListLessIndent", callback = "() => File.editor.UserOp.lessIndent(File.editor)" },
+    { enable = true, type = "command", icon = "📝", keyword = "InsertParagraphAbove", callback = "() => File.editor.UserOp.insertParagraph(true)" },
+    { enable = true, type = "command", icon = "📝", keyword = "InsertParagraphBelow", callback = "() => File.editor.UserOp.insertParagraph(false)" },
+    { enable = true, type = "command", icon = "📝", keyword = "LinkReference", callback = "() => File.editor.stylize.insertBlock('def_link')" },
+    { enable = true, type = "command", icon = "📝", keyword = "FootnoteReference", callback = "() => File.editor.stylize.insertBlock('def_footnote')" },
+    { enable = true, type = "command", icon = "📝", keyword = "HorizontalLine", callback = "() => File.editor.stylize.insertBlock('hr')" },
+    { enable = true, type = "command", icon = "📝", keyword = "TOC", callback = "() => File.editor.stylize.insertBlock('toc')" },
+    { enable = true, type = "command", icon = "📝", keyword = "FrontMatter", callback = "() => File.editor.stylize.insertMetaBlock()" },
+    { enable = true, type = "command", icon = "👕", keyword = "Strong", callback = "() => File.editor.stylize.toggleStyle('strong')" },
+    { enable = true, type = "command", icon = "👕", keyword = "Em", callback = "() => File.editor.stylize.toggleStyle('em')" },
+    { enable = true, type = "command", icon = "👕", keyword = "Underline", callback = "() => File.editor.stylize.toggleStyle('underline')" },
+    { enable = true, type = "command", icon = "👕", keyword = "Code", callback = "() => File.editor.stylize.toggleStyle('code')" },
+    { enable = true, type = "command", icon = "👕", keyword = "InlineMath", callback = "() => File.editor.stylize.toggleStyle('inline_math')" },
+    { enable = true, type = "command", icon = "👕", keyword = "Delete", callback = "() => File.editor.stylize.toggleStyle('del')" },
+    { enable = true, type = "command", icon = "👕", keyword = "Highlight", callback = "() => File.editor.stylize.toggleStyle('highlight')" },
+    { enable = true, type = "command", icon = "👕", keyword = "Superscript", callback = "() => File.editor.stylize.toggleStyle('superscript')" },
+    { enable = true, type = "command", icon = "👕", keyword = "Subscript", callback = "() => File.editor.stylize.toggleStyle('subscript')" },
+    { enable = true, type = "command", icon = "👕", keyword = "Footnote", callback = "() => File.editor.stylize.toggleStyle('footnote')" },
+    { enable = true, type = "command", icon = "👕", keyword = "Comment", callback = "() => File.editor.stylize.toggleStyle('comment')" },
+    { enable = true, type = "command", icon = "👕", keyword = "Link", callback = "() => File.editor.stylize.toggleStyle('link')" },
+    { enable = true, type = "command", icon = "👕", keyword = "Image", callback = "() => File.editor.stylize.toggleStyle('image')" },
+    { enable = true, type = "command", icon = "👕", keyword = "ClearStyle", callback = "() => File.editor.stylize.clearStyle()" },
     { enable = true, type = "command", icon = "💻", keyword = "Golang", callback = "() => this.utils.insertFence('go')" },
     { enable = true, type = "command", icon = "💻", keyword = "Python", callback = "() => this.utils.insertFence('python')" },
     { enable = true, type = "command", icon = "💻", keyword = "Bash", callback = "() => this.utils.insertFence('bash')" },
@@ -1721,22 +1841,24 @@ COMMANDS = [
     { enable = true, type = "command", icon = "💻", keyword = "Mermaid", callback = "() => this.utils.insertFence('mermaid')" },
     { enable = true, type = "command", icon = "💻", keyword = "JavaScript", callback = "() => this.utils.insertFence('javascript')" },
     { enable = true, type = "command", icon = "💻", keyword = "TypeScript", callback = "() => this.utils.insertFence('typescript')" },
-    { enable = true, type = "command", icon = "🧰", keyword = "JumpTop", hint = "至顶部", callback = "() => File.editor.selection.jumpTop()" },
-    { enable = true, type = "command", icon = "🧰", keyword = "JumpBottom", hint = "至底部", callback = "() => File.editor.selection.jumpBottom()" },
-    { enable = true, type = "command", icon = "🧰", keyword = "JumpToLineStart", hint = "至行首", callback = "() => File.editor.selection.jumpToLineStart()" },
-    { enable = true, type = "command", icon = "🧰", keyword = "JumpToLineEnd", hint = "至行尾", callback = "() => File.editor.selection.jumpToLineEnd()" },
-    { enable = true, type = "command", icon = "🧰", keyword = "Help", hint = "帮助", callback = "() => this.call()" },
+    { enable = true, type = "command", icon = "🧰", keyword = "JumpTop", callback = "() => File.editor.selection.jumpTop()" },
+    { enable = true, type = "command", icon = "🧰", keyword = "JumpBottom", callback = "() => File.editor.selection.jumpBottom()" },
+    { enable = true, type = "command", icon = "🧰", keyword = "JumpToLineStart", callback = "() => File.editor.selection.jumpToLineStart()" },
+    { enable = true, type = "command", icon = "🧰", keyword = "JumpToLineEnd", callback = "() => File.editor.selection.jumpToLineEnd()" },
+    { enable = true, type = "command", icon = "🧰", keyword = "Help", callback = "() => this.call()" },
     # 文本片段
-    { enable = true, type = "snippet", icon = "🧩", keyword = "Br", hint = "换行符", callback = "<br>" },
-    { enable = true, type = "snippet", icon = "🧩", keyword = "IMG", hint = "<img>", cursorOffset = [-14, -14], callback = '<img src="" alt="alt" />' },
-    { enable = true, type = "snippet", icon = "🧩", keyword = "SnippetExample", hint = "示例片段", callback = "https://github.com/obgnail/typora_plugin" },
-    { enable = true, type = "snippet", icon = "🧩", keyword = "cursorOffsetExample", hint = "光标偏移示例", cursorOffset = [-31, -18], callback = "感谢您使用 Typora Plugin，如果本项目帮助到您，欢迎 STAR" },
+    { enable = true, type = "snippet", icon = "🧩", keyword = "BR", callback = "<br>" },
+    { enable = true, type = "snippet", icon = "🧩", keyword = "IMG", cursorOffset = [-14, -14], callback = '<img src="" alt="alt" />' },
+    { enable = true, type = "snippet", icon = "🧩", keyword = "SPAN", cursorOffset = [-7, -7], callback = '<span></span>' },
+    { enable = true, type = "snippet", icon = "🧩", keyword = "cursorOffsetExample", cursorOffset = [-23, -10], callback = "Enjoying Typora Plugin? Star us!" },
+    { enable = true, type = "snippet", icon = "🧩", keyword = "SnippetExample", callback = "https://github.com/obgnail/typora_plugin" },
     # 动态文本片段
-    { enable = true, type = "gen-snp", icon = "🧩", keyword = "Datetime", hint = "日期时间", callback = "() => new Date().toLocaleString('chinese', {hour12: false})" },
-    { enable = true, type = "gen-snp", icon = "🧩", keyword = "Date", hint = "日期", callback = "() => { let day = new Date(); return `${day.getFullYear()}/${day.getMonth()+1}/${day.getDate()}` }" },
-    { enable = true, type = "gen-snp", icon = "🧩", keyword = "Time", hint = "时间", callback = "() => { let day = new Date(); return `${day.getHours()}:${day.getMinutes()}:${day.getSeconds()}` }" },
-    { enable = true, type = "gen-snp", icon = "🧩", keyword = "Timestamp", hint = "时间戳", callback = "() => new Date().getTime().toString()" },
-    { enable = true, type = "gen-snp", icon = "🧩", keyword = "Week", hint = "星期", callback = "() => '星期' + '日一二三四五六'.charAt((new Date()).getDay())" },
+    { enable = true, type = "gen-snp", icon = "🧩", keyword = "Datetime", callback = "() => new Date().toLocaleString(undefined, {hour12: false})" },
+    { enable = true, type = "gen-snp", icon = "🧩", keyword = "Date", callback = "() => { let d = new Date(); return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}` }" },
+    { enable = true, type = "gen-snp", icon = "🧩", keyword = "Time", callback = "() => { let d = new Date(); return `${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}` }" },
+    { enable = true, type = "gen-snp", icon = "🧩", keyword = "Timestamp", callback = "() => new Date().getTime().toString()" },
+    { enable = true, type = "gen-snp", icon = "🧩", keyword = "Weekday", callback = "() => new Date().toLocaleDateString(undefined, { weekday: 'long' })" },
+    { enable = true, type = "gen-snp", icon = "🧩", keyword = "UUID", callback = "() => this.utils.getUUID()" },
     # 行内公式内才可使用
     { enable = true, type = "snippet", icon = "🧩", keyword = "alpha", hint = "α", scope = "inline_math", callback = "\\alpha " },
     { enable = true, type = "snippet", icon = "🧩", keyword = "beta", hint = "β", scope = "inline_math", callback = "\\beta " },
@@ -1744,11 +1866,11 @@ COMMANDS = [
     { enable = true, type = "snippet", icon = "🧩", keyword = "rightarrow", hint = "→", scope = "inline_math", callback = "\\rightarrow " },
     # 进阶：命令参数
     #   代码块生成器：输入 /BlockCodeGenerator_go_java_bash 即可同时插入 go、java、bash 三个代码块
-    { enable = true, type = "gen-snp", icon = "🌟", keyword = "BlockCodeGenerator", hint = "代码块生成器", callback = "(...langs) => langs.map(l => '```' + l.toLowerCase() + '\\n```').join('\\n\\n')" },
+    { enable = true, type = "gen-snp", icon = "🌟", keyword = "BlockCodeGenerator", callback = "(...langs) => langs.map(l => '```' + l.toLowerCase() + '\\n```').join('\\n\\n')" },
     #   提示块生成器：输入 /CalloutGenerator_note_info_quote 即可同时插入 NOTE、INFO、QUOTE 三个 callout
-    { enable = true, type = "gen-snp", icon = "🌟", keyword = "CalloutGenerator", hint = "提示块生成器", callback = "(...types) => types.map(t => `> [!${t.toUpperCase()}]\\n>\\n> `).join('\\n\\n')" },
+    { enable = true, type = "gen-snp", icon = "🌟", keyword = "CalloutGenerator", callback = "(...types) => types.map(t => `> [!${t.toUpperCase()}]\\n>\\n> `).join('\\n\\n')" },
     #   表格生成器：输入 /TableGenerator_3_4 即可插入三列四行的表格
-    { enable = true, type = "command", icon = "🌟", keyword = "TableGenerator", hint = "表格生成器", callback = "(col, row) => { col = parseInt(col); row = parseInt(row); const c = ['      ', ' ---- ', ...Array(row - 1).fill('      ')].map(e => `|${Array(col).fill(e).join('|')}|`).join('\\n'); this.utils.insertText(null, c, false) }" },
+    { enable = true, type = "command", icon = "🌟", keyword = "TableGenerator", callback = "(col, row) => { col = parseInt(col); row = parseInt(row); const c = ['      ', ' ---- ', ...Array(row - 1).fill('      ')].map(e => `|${Array(col).fill(e).join('|')}|`).join('\\n'); this.utils.insertText(null, c, false) }" },
 ]
 
 
@@ -1806,7 +1928,7 @@ FIND_LOST_PLUGIN = true
 #   NAME: 一级菜单的名称
 #   LIST: 二级菜单的插件列表，`---` 代表在页面上插入一个分隔横线。允许填入 pluginName (插件，如：help) 或者 pluginName.callArg (插件的其中一个选项，如：help.donate)
 [[right_click_menu.MENUS]]
-NAME = "少用插件"
+NAME = "__LESS_USED_PLUGINS__"
 LIST = [
     "window_tab",
     "fence_enhance",
@@ -1838,7 +1960,7 @@ LIST = [
     "test",
 ]
 [[right_click_menu.MENUS]]
-NAME = "常用插件"
+NAME = "__OFTEN_USED_PLUGINS__"
 LIST = [
     "commander",
     "markmap",
@@ -2023,17 +2145,17 @@ HOTKEY = ""
 #   - 由于 `eval` 的强大，你甚至可以注入插件系统，修改插件系统的行为（此时要将 hotkey 设置为 【-】） —— 试试将下面的 【alertWhenOpenFile】 的 enable 置为 true
 CUSTOM_HOTKEYS = [
     # 简单使用：insertBlockCode
-    { enable = false, hotkey = "ctrl+shift+e", desc = "快速插入javascript代码块", evil = "() => this.utils.insertFence('javascript')" },
+    { enable = false, hotkey = "ctrl+shift+e", desc = "Insert JavaScript BlockCode", evil = "() => this.utils.insertFence('javascript')" },
     # 支持但邪恶的使用方法：openCalc
-    { enable = false, hotkey = "ctrl+shift+e", desc = "打开windows计算器", evil = "() => this.utils.Package.ChildProcess.exec('cmd /C calc')" },
+    { enable = false, hotkey = "ctrl+shift+e", desc = "Open Windows Calculator", evil = "() => this.utils.Package.ChildProcess.exec('cmd /C calc')" },
     # 支持但不推荐的使用方法：switchFirstTab
-    { enable = false, hotkey = "ctrl+shift+e", desc = "切换到第一个标签", evil = "() => this.utils.getPlugin('window_tab').switchTab(0)" },
+    { enable = false, hotkey = "ctrl+shift+e", desc = "Switch to the first window tab", evil = "() => this.utils.getPlugin('window_tab').switchTab(0)" },
     # 支持但是不正常不推荐的使用方法：alertWhenOpenFile
-    { enable = false, hotkey = "-", desc = "每当打开文件时都弹出提示窗口", evil = "this.utils.eventHub.addEventListener(this.utils.eventHub.eventType.fileOpened, filepath => window.confirm(`你打开了文件: ${filepath}`))" },
+    { enable = false, hotkey = "-", desc = "Pop up a prompt window", evil = "this.utils.eventHub.addEventListener(this.utils.eventHub.eventType.fileOpened, filepath => window.confirm(`You opened the file: ${filepath}`))" },
     # 正规使用方法：insertKanban
-    { enable = false, hotkey = "ctrl+shift+e", desc = "在光标位置插入看板", plugin = "kanban", function = "callback" },
+    { enable = false, hotkey = "ctrl+shift+e", desc = "Insert Kanban BlockCode", plugin = "kanban", function = "callback" },
     # 正规使用方法：foldFence
-    { enable = false, hotkey = "ctrl+[", desc = "当光标置于代码块中，按下此快捷键可以折叠/展开代码块", plugin = "fence_enhance", function = "foldFence", closestSelector = "#write .md-fences" },
+    { enable = false, hotkey = "ctrl+[", desc = "Folding/unfolding BlockCode", plugin = "fence_enhance", function = "foldFence", closestSelector = "#write .md-fences" },
 ]
 
 

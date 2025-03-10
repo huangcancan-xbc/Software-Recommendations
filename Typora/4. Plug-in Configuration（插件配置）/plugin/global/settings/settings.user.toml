@@ -6,3 +6,10 @@ NEW_TAB_AT = "end"
 
 [toolbar]
 DEFAULT_TOOL = "plu"
+
+[fence_enhance]
+HIGHLIGHT_BY_LANGUAGE = true
+
+[datatables]
+ENABLE = true
+NAME = "表格增强"

@@ -36,6 +36,7 @@ class rightClickMenuPlugin extends BasePlugin {
 
     appendFirst = () => {
         const items = this.config.MENUS.map(({ NAME, LIST = [] }, idx) => {
+            NAME = this.i18n._t("settings", NAME)
             const item = [{ ele: "span", "data-lg": "Menu", text: NAME }]
             const children = [{ ele: "a", role: "menuitem", children: item }]
             const noExtraMenu = LIST && LIST.length === 1
@@ -306,7 +307,7 @@ class rightClickMenuPlugin extends BasePlugin {
         } else if (action === "show_action_icon") {
             this.config.SHOW_ACTION_OPTIONS_ICON = !this.config.SHOW_ACTION_OPTIONS_ICON
             const message = this.i18n.t("modal.settingSuccessful")
-            const detail = this.i18n.t("modal.reconfirmRestart")
+            const detail = this.i18n._t("global", "reconfirmRestart")
             const op = { title: this.pluginName, type: "info", message, detail }
             const { response } = await this.utils.showMessageBox(op)
             if (response === 0) {
