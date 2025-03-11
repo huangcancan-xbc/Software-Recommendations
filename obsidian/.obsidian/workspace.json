@@ -1,0 +1,216 @@
+{
+  "main": {
+    "id": "e3e40a53701f3cb0",
+    "type": "split",
+    "children": [
+      {
+        "id": "ce3699e94ca6061d",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "2d2a51bbf7231230",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Lambda表达式.md",
+                "mode": "preview",
+                "source": false,
+                "backlinks": true,
+                "backlinkOpts": {
+                  "collapseAll": false,
+                  "extraContext": false,
+                  "sortOrder": "alphabetical",
+                  "showSearch": false,
+                  "searchQuery": "",
+                  "backlinkCollapsed": false,
+                  "unlinkedCollapsed": true
+                }
+              },
+              "icon": "lucide-file",
+              "title": "Lambda表达式"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "aea06dffc6f6564b",
+    "type": "split",
+    "children": [
+      {
+        "id": "dbe2163fc8757648",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "4f674ffe206e31e1",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": true
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "8c7e13e24dcfff01",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "3df2144ccdc67ed3",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 347.501522064209
+  },
+  "right": {
+    "id": "090a3bc7515ec58d",
+    "type": "split",
+    "children": [
+      {
+        "id": "6bbedade0e32bd02",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "19b878210d76fcfc",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Linux/011 Linux进程.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "011 Linux进程 的反向链接列表"
+            }
+          },
+          {
+            "id": "1d4ca31a149a698e",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Obsidian/obsidian使用.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "obsidian使用 的出链列表"
+            }
+          },
+          {
+            "id": "22fad9e68aa0a858",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "f1be512b6506737b",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Lambda表达式.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Lambda表达式 的大纲"
+            }
+          }
+        ],
+        "currentTab": 3
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false
+    }
+  },
+  "active": "2d2a51bbf7231230",
+  "lastOpenFiles": [
+    "llround 的讲解.md",
+    "markdown基础语法.md",
+    "Lambda表达式.md",
+    "分析 CSS 文件每部分的作用.md",
+    "Obsidian/Git 提交的常见场景和命令.md",
+    "Obsidian/Git 版本迭代.md",
+    "C++/C++ STL 总结-基于算法竞赛（悠享版）.md",
+    "C++/C++ STL 总结-基于算法竞赛（悠享版） 1.md",
+    "Obsidian/域名.md",
+    "Linux/006 yum和Linux生态.md",
+    "Linux/005 权限的理解.md",
+    "Linux/001 环境搭建.md",
+    "C++/02 类与对象（上）.md",
+    "Linux/002 创建普通账户（为朋友创建、删除账户）.md",
+    "Linux/011 Linux进程.md",
+    "Linux/003 系统和入门指令.md",
+    "Linux/004 Linux基本指令.md",
+    "Linux/007 Linux 开发工具（上）—— vim、解放sudo、gc+.md",
+    "Linux/010 冯・诺依曼体系结构和操作系统.md",
+    "Obsidian/我的PicGo令牌.md",
+    "Obsidian/模板.md",
+    "Obsidian/脱离大学学习法.md",
+    "Linux/009 进度条的实现.md",
+    "Linux/008 Linux 开发工具（下） —— make、Makefile、git和gdb.md",
+    "Obsidian/GitHub 仓库添加协议（许可证）.md",
+    "C++/06 模板初阶.md",
+    "Obsidian",
+    "算法原理详细讲解：.markdown",
+    "附件/Typora.pdf",
+    "附件/Pasted image 20250224160520.png",
+    "未命名.canvas",
+    "附件"
+  ]
+}

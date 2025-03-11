@@ -1,0 +1,13 @@
+{
+  "blue-topaz-theme@@color-scheme-options": "color-scheme-options-topaz-nord",
+  "blue-topaz-theme@@background-notebook-liked-switch": false,
+  "blue-topaz-theme@@background-image-settings-switch": false,
+  "blue-topaz-theme@@rainbow-checklist": true,
+  "Blue-Topaz-Codebox-Highlight@@code-theme-selection": "code-theme-bt-default",
+  "blue-topaz-theme@@scrollbar-style-option": "default-scrollbar",
+  "shiba-theme-settings@@shiba-colors-theme-light": "sky-light",
+  "shiba-theme-settings@@shiba-accent-colors": "accent-blue",
+  "shiba-theme-settings@@shiba-colors-theme-dark": "warm-dark",
+  "Appearance-light@@card-layout-open-light": true,
+  "Appearance-light@@theme-light-style-select": "theme-light-background-old-default"
+}
