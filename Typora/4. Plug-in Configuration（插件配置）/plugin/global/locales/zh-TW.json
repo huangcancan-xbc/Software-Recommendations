@@ -28,7 +28,7 @@
     "act.toggle_show_path": "懸停顯示完整路徑",
     "act.toggle_hide_title_bar": "一體化視窗樣式時隱藏標題欄",
     "act.toggle_drag_style": "JetBrains 风格的標籤拖曳方式",
-    "act.toggle_limit_y_axis": "拖曳時限制垂直移動",
+    "act.toggle_limit_y_axis": "限製豎直拖曳",
     "act.toggle_ctrl_click": "Ctrl+點擊新視窗打開",
     "act.toggle_ctrl_wheel": "Ctrl+滾輪切換標籤",
     "act.toggle_middle_click": "中鍵關閉標籤",
@@ -43,8 +43,7 @@
     "func.showInFinder": "開啟檔案路徑",
     "func.openInNewWindow": "在新視窗開啟",
     "modal.exit": "退出 Typora",
-    "modal.reconfirmExit": "確認退出？",
-    "modal.restart": "重啟 Typora"
+    "modal.reconfirmExit": "確認退出？"
   },
   "search_multi": {
     "pluginName": "多元檔案搜尋",
@@ -499,9 +498,9 @@
     "act.toggle_hotkey": "顯示快速鍵",
     "act.show_action_icon": "為動作選項添加 ⌘ 圖示",
     "act.hide_other_options": "隱藏除了插件以外的選項",
+    "act.find_lost_plugin": "列出所有的一級插件",
     "actHint.do_not_hide": "右鍵選單點擊後不會自動消失",
-    "achHint.disabled": "功能於此時不可用",
-    "modal.settingSuccessful": "設定成功"
+    "achHint.disabled": "功能於此時不可用"
   },
   "pie_menu": {
     "pluginName": "圓餅圖選單"
@@ -520,8 +519,7 @@
     "info.json_rpc": "此插件面向開發者",
     "info.reopenClosedFiles": "此插件依賴「標籤頁管理」插件",
     "info.redirectLocalRootUrl": "此插件手動修改配置後才可執行",
-    "info.article_uploader": "此插件面向特殊族群，手動修改配置後才可執行",
-    "modal.settingSuccessful": "設定成功"
+    "info.article_uploader": "此插件面向特殊族群，手動修改配置後才可執行"
   },
   "file_counter": {
     "pluginName": "檔案計數"
@@ -532,7 +530,8 @@
     "editConfigFile": "如需自訂快速鍵，請修改配置檔案"
   },
   "help": {
-    "pluginName": "說明",
+    "pluginName": "幫助",
+    "act.set_language": "語言",
     "act.update_plugin": "升級插件",
     "act.preferences": "啟停插件",
     "act.uninstall_plugin": "解除安裝插件",
@@ -549,10 +548,10 @@
     "currentVersion": "目前版本",
     "developersOnly": "此功能僅對開發者開放",
     "leaveWord": "感謝您使用 Typora Plugin，本專案開源、免費，請自由地享受。如果本專案幫助到您，歡迎 ⭐，歡迎推薦給你志同道合的朋友使用。",
-    "uninstall.title": "解除安裝插件系統",
+    "uninstall.title": "卸載插件系統",
     "uninstall.hint": "請輸入「{{reconfirm}}」啟動自毀程式",
-    "uninstall.reconfirmInput": "解除安裝插件系統",
-    "uninstall.incorrectContent": "請輸入正確的內容",
+    "uninstall.reconfirmInput": "卸載插件系統",
+    "uninstall.incorrectContent": "請輸入正確的卸載指令",
     "uninstall.ok": "解除安裝成功",
     "uninstall.okMsg": "插件系統已經解除安裝"
   },
@@ -726,8 +725,8 @@
     "func.close": "關閉",
     "func.move": "移動",
     "func.refresh": "重新整理",
-    "func.toggleSourceMode": "切換原始碼模式（也可以在表格中右鍵點擊）",
-    "func.fixAll": "自動修復錯誤",
+    "func.toggleSourceMode": "切換原始碼模式（也可以在表格中單擊右鍵）",
+    "func.fixAll": "修復格式錯誤",
     "func.translate": "翻譯",
     "func.detailAll": "詳細資訊",
     "func.settings": "目前配置",
@@ -742,7 +741,7 @@
     "MD009": "行末空格不合規",
     "MD010": "縮排應使用空格代替Tab",
     "MD011": "連結的中括號和圓括號位置顛倒",
-    "MD012": "不應有連續空行",
+    "MD012": "連續空行過多",
     "MD013": "此行過長",
     "MD014": "程式碼區塊中的終端機命令除非後接其輸出，否則不能前接$符號",
     "MD018": "ATX標題格式下，#符號和文字之間需空一格",
@@ -784,7 +783,8 @@
     "MD054": "連結和圖片格式應一致",
     "MD055": "表格分隔符格式應一致",
     "MD056": "表格欄數應一致",
-    "MD058": "表格前後需用空行隔開"
+    "MD058": "表格前後需用空行隔開",
+    "MD101": "公式區塊前後需用空行隔開"
   },
   "reopenClosedFiles": {
     "pluginName": "打開上次退出時尚未關閉的標籤頁"

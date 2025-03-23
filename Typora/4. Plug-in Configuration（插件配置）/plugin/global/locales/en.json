@@ -43,8 +43,7 @@
     "func.showInFinder": "Open File Location",
     "func.openInNewWindow": "Open in New Window",
     "modal.exit": "Exit Typora",
-    "modal.reconfirmExit": "Are you sure you want to exit?",
-    "modal.restart": "Restart Typora"
+    "modal.reconfirmExit": "Are you sure you want to exit?"
   },
   "search_multi": {
     "pluginName": "Multi-Fields File Searcher",
@@ -364,7 +363,7 @@
     "modal.toggle_state_button_hint.title": "Button Hints",
     "modal.toggle_state_fold_lang.title": "Code Folding",
     "modal.toggle_state_highlight.title": "Highlight Code Lines",
-    "modal.toggle_state_highlight_by_lang.title": "Highlight Code Lines",
+    "modal.toggle_state_highlight_by_lang.title": "Highlight Lines by Language",
     "modal.toggle_state_indent_alignment.title": "Indent Alignment",
     "modal.toggle_state_hotkey.SWAP_PREVIOUS_LINE": "Swap Current Line with Previous Line",
     "modal.toggle_state_hotkey.SWAP_NEXT_LINE": "Swap Current Line with Next Line",
@@ -499,9 +498,9 @@
     "act.toggle_hotkey": "Show Hotkeys",
     "act.show_action_icon": "Add ⌘ Icon to Action Options",
     "act.hide_other_options": "Hide Options Except Plugins",
+    "act.find_lost_plugin": "List all primary plugins",
     "actHint.do_not_hide": "Right-click menu will not disappear after clicking",
-    "achHint.disabled": "Unavailable at this time",
-    "modal.settingSuccessful": "Settings Successful"
+    "achHint.disabled": "Unavailable at this time"
   },
   "pie_menu": {
     "pluginName": "Pie Menu"
@@ -520,8 +519,7 @@
     "info.json_rpc": "This plugin is for developers",
     "info.reopenClosedFiles": "This plugin depends on the window_tab plugin",
     "info.redirectLocalRootUrl": "This plugin requires manual configuration to run",
-    "info.article_uploader": "This plugin is for specific users, requiring manual configuration to run",
-    "modal.settingSuccessful": "Settings Successful"
+    "info.article_uploader": "This plugin is for specific users, requiring manual configuration to run"
   },
   "file_counter": {
     "pluginName": "File Counter"
@@ -533,6 +531,7 @@
   },
   "help": {
     "pluginName": "Help",
+    "act.set_language": "Language",
     "act.update_plugin": "Update Plugin",
     "act.preferences": "Enable / Disable Plugin",
     "act.uninstall_plugin": "Uninstall Plugin",
@@ -547,12 +546,12 @@
     "act.donate": "Buy the Developer a Coffee",
     "act.about": "About",
     "currentVersion": "Current Version",
-    "developersOnly": "This feature is for developers only",
+    "developersOnly": "Developers Only",
     "leaveWord": "Thank you for using Typora Plugin. This project is open-source and free. Enjoy it freely. If this project has helped you, please give it a ⭐ and recommend it to your like-minded friends.",
     "uninstall.title": "Uninstall Plugin System",
     "uninstall.hint": "Enter \"{{reconfirm}}\" to start uninstall program",
     "uninstall.reconfirmInput": "Uninstall Plugin System",
-    "uninstall.incorrectContent": "Please enter the correct content",
+    "uninstall.incorrectContent": "Please enter a valid uninstall command",
     "uninstall.ok": "Uninstallation Successful",
     "uninstall.okMsg": "The plugin system has been uninstalled"
   },
@@ -727,7 +726,7 @@
     "func.move": "Move",
     "func.refresh": "Refresh",
     "func.toggleSourceMode": "Toggle Source Mode (also available via right-click in the table)",
-    "func.fixAll": "Fix All Errors",
+    "func.fixAll": "Fix Lint Errors",
     "func.translate": "Translate",
     "func.detailAll": "Detailed Information",
     "func.settings": "Current Configuration",
@@ -773,9 +772,9 @@
     "MD043": "Incorrect heading structure",
     "MD044": "Incorrect capitalization of proper names",
     "MD045": "Images require alternate text",
-    "MD046": "Inconsistent blockcodes style",
+    "MD046": "Inconsistent Blockcodes style",
     "MD047": "File must end with a single newline character",
-    "MD048": "Inconsistent blockcodes sign",
+    "MD048": "Inconsistent Blockcodes sign",
     "MD049": "Inconsistent emphasis style",
     "MD050": "Inconsistent strong style",
     "MD051": "Link fragment does not resolve",
@@ -784,7 +783,8 @@
     "MD054": "Inconsistent link/image reference definitions",
     "MD055": "Inconsistent table pipe style",
     "MD056": "Inconsistent number of table cells per row",
-    "MD058": "Tables must be surrounded by blank lines"
+    "MD058": "Tables must be surrounded by blank lines",
+    "MD101": "MathBlocks must be surrounded by blank lines"
   },
   "reopenClosedFiles": {
     "pluginName": "Reopen Closed Files"

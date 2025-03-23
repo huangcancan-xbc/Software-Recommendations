@@ -1,55 +1,39 @@
-let lib
-let libPath
-let config = { default: true }
+let LIB
+let RULES
+let CUSTOM_RULES
 
-function init({ config, libPath }) {
-    assignLibPath(libPath)
-    assignConfig(config)
-    lazyLoad()
-    console.debug(`markdownLint@${lib.getVersion()} worker is initialized with rules`, config)
+const linter = {
+    init: ({ libPath, customRulePaths, config, content }) => {
+        LIB = require(libPath)
+        RULES = { "default": true, ...config }
+        CUSTOM_RULES = customRulePaths.map(e => require(e))
+        console.debug(`markdownlint@${LIB.getVersion()} worker is initialized with rules`, RULES)
+        if (content) {
+            return linter.check({ content })
+        }
+    },
+    check: async ({ content }) => {
+        const op = { strings: { content }, config: RULES, customRules: CUSTOM_RULES }
+        const result = await LIB.lint(op)
+        return result.content.sort((a, b) => a.lineNumber - b.lineNumber)
+    },
+    fix: async ({ content, fixInfo }) => {
+        if (fixInfo && fixInfo.length) {
+            return LIB.applyFixes(content, fixInfo)
+        }
+    },
 }
-
-function assignLibPath(lp) {
-    libPath = lp
-}
-
-function assignConfig(cfg) {
-    Object.assign(config, cfg)
-}
-
-function lazyLoad() {
-    if (!lib && libPath) {
-        lib = require(libPath)
-    }
-}
-
-async function check({ fileContent }) {
-    lazyLoad()
-    const { content } = await lib.lint({ strings: { content: fileContent }, config })
-    return content.sort((a, b) => a.lineNumber - b.lineNumber)
-}
-
-async function fix({ fileContent, fixInfo }) {
-    lazyLoad()
-    fixInfo = fixInfo || await check({ fileContent })
-    if (fixInfo && fixInfo.length) {
-        return lib.applyFixes(fileContent, fixInfo)
-    }
-}
-
-const linter = { init, check, fix }
 
 onmessage = async ({ data: { action, payload } }) => {
     if (!payload) return
 
-    const func = linter[action]
-    if (func) {
-        const result = await func(payload)
-        if (result) {
-            self.postMessage({ action, result })
-        }
+    const fn = linter[action]
+    if (!fn) {
+        console.error("get error action:", action)
         return
     }
-
-    console.error("get error action:", action)
+    const result = await fn(payload)
+    if (result) {
+        postMessage({ action, result })
+    }
 }

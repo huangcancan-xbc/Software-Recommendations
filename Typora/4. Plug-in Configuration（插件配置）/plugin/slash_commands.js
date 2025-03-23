@@ -12,7 +12,7 @@ class slashCommandsPlugin extends BasePlugin {
             c.hint = this.utils.escape(c.hint || "")
         })
 
-        this.input = ""
+        this.inputs = { kw: "", command: "", params: [], textBefore: "", textAfter: "", scope: "", bookmark: null }
         this.matched = new Map()
         this.regexp = new RegExp(TRIGGER_REGEXP)
         this.matchStrategy = this._getMatchStrategy(MATCH_STRATEGY)
@@ -47,7 +47,7 @@ class slashCommandsPlugin extends BasePlugin {
                 [this.SCOPE.PLAIN]: this.i18n.t("scope.plain"),
                 [this.SCOPE.INLINE_MATH]: this.i18n.t("scope.inlineMath"),
             },
-            editConfigFile:  this.i18n.t("editConfigFile")
+            editConfigFile: this.i18n.t("editConfigFile")
         }
         const getType = type => i18n.types[type] || i18n.unknown
         const getScope = scope => i18n.scopes[scope] || i18n.unknown
@@ -65,18 +65,18 @@ class slashCommandsPlugin extends BasePlugin {
     }
 
     _getTextAround = () => {
-        const rangy = File.editor.selection.getRangy()
-        if (rangy && rangy.collapsed) {
-            const container = $(rangy.startContainer).closest(`[md-inline="plain"], [type="math/tex"]`)[0]
+        const range = File.editor.selection.getRangy()
+        if (range && range.collapsed) {
+            const container = $(range.startContainer).closest(`[md-inline="plain"], [type="math/tex"]`)[0]
             if (container) {
                 const scope = this._getScope(container)
-                const bookmark = rangy.getBookmark(container)
-                rangy.setStartBefore(container)
-                const textBefore = rangy.toString()
-                rangy.collapse(false)
-                rangy.setEndAfter(container)
-                const textAfter = rangy.toString()
-                rangy.setStart(container, 0)
+                const bookmark = range.getBookmark(container)
+                range.setStartBefore(container)
+                const textBefore = range.toString()
+                range.collapse(false)
+                range.setEndAfter(container)
+                const textAfter = range.toString()
+                range.setStart(container, 0)
                 return [textBefore, textAfter, bookmark, scope]
             }
         }
@@ -91,16 +91,20 @@ class slashCommandsPlugin extends BasePlugin {
         const [textBefore, textAfter, bookmark, scope] = this._getTextAround()
         if (!textBefore) return
         const match = textBefore.match(this.regexp)
-        if (!match || !match.groups || match.groups.kw === undefined) return
+        const kw = match && match.groups && match.groups.kw
+        if (kw == null) return
 
-        this.input = match.groups.kw
-        const command = this.input.toLowerCase().split(this.config.FUNC_PARAM_SEPARATOR)[0]
-        this._match(scope, command)
-        if (this.matched.size === 0) return
+        const [command, ...params] = kw.split(this.config.FUNC_PARAM_SEPARATOR)
+        const lowerCommand = command.toLowerCase()
 
-        bookmark.start -= (this.input.length + 1)
+        const matchResult = this._match(scope, lowerCommand)
+        if (matchResult.size === 0) return
+
+        this.inputs = { kw, command, params, textBefore, textAfter, scope, bookmark }
+
+        bookmark.start -= (kw.length + 1)
         File.editor.autoComplete.attachToRange()
-        File.editor.autoComplete.show([], bookmark, command, this.handler)
+        File.editor.autoComplete.show([], bookmark, lowerCommand, this.handler)
     }
 
     _getMatchStrategy = (type) => {
@@ -178,6 +182,7 @@ class slashCommandsPlugin extends BasePlugin {
                 this.matched.set(kw, cmd)
             }
         }
+        return this.matched
     }
 
     _search = input => this.orderStrategy([...this.matched.keys()], input)
@@ -199,63 +204,66 @@ class slashCommandsPlugin extends BasePlugin {
         return ret instanceof Function ? (ret(...args) || "").toString() : fnString
     }
 
+    _clearAnchor = (anchor) => {
+        const range = File.editor.selection.getRangy()
+        const textNode = anchor.containerNode.firstChild
+        range.setStart(textNode, anchor.start)
+        range.setEnd(textNode, anchor.end)
+        File.editor.selection.setRange(range, true)
+        File.editor.UserOp.pasteHandler(File.editor, "", true)
+    }
+
+    _normalizeAnchor = (anchor) => anchor.containerNode.normalize()
+
+    _refresh = () => {
+        const node = this.utils.findActiveNode()
+        if (!node) return
+
+        const parsedNode = File.editor.simpleParse(node, true)
+        if (!parsedNode) return
+
+        parsedNode[0].undo[0] = File.editor.lastCursor
+        setTimeout(() => {
+            parsedNode[0].redo.push(File.editor.selection.buildUndo())
+            File.editor.findElemById(parsedNode[2]).replaceWith(parsedNode[1])
+            File.editor.undo.register(parsedNode[0], true)
+            File.editor.quickRefresh()
+            File.editor.selection.scrollAdjust()
+            File.editor.undo.exeCommand(parsedNode[0].redo.last())
+        }, 50)
+    }
+
+    _selectRange = (offset) => {
+        const [start, end] = offset
+        if (start === 0 && end === 0) return
+
+        const { range, bookmark } = this.utils.getRangy()
+        bookmark.start += start
+        bookmark.end += end
+        range.moveToBookmark(bookmark)
+        range.select()
+    }
+
     _runCommand = suggest => {
+        let result = ""
         const cmd = this.matched.get(suggest)
-        if (!cmd) return ""
-
-        const { anchor } = File.editor.autoComplete.state
-        const normalizeAnchor = () => anchor.containerNode.normalize()
-        const refresh = () => {
-            const node = this.utils.findActiveNode()
-            if (!node) return
-
-            const parsedNode = File.editor.simpleParse(node, true)
-            if (!parsedNode) return
-
-            parsedNode[0].undo[0] = File.editor.lastCursor
+        if (cmd) {
+            const { anchor } = File.editor.autoComplete.state
+            if (cmd.type === this.TYPE.SNIPPET) {
+                result = cmd.callback
+            } else if (cmd.type === this.TYPE.GENERATE_SNIPPET) {
+                result = this._evalFunction(cmd.callback, ...this.inputs.params)
+            } else if (cmd.type === this.TYPE.COMMAND) {
+                this._clearAnchor(anchor)
+                setTimeout(() => this._evalFunction(cmd.callback, ...this.inputs.params), 50)
+            }
             setTimeout(() => {
-                parsedNode[0].redo.push(File.editor.selection.buildUndo())
-                File.editor.findElemById(parsedNode[2]).replaceWith(parsedNode[1])
-                File.editor.undo.register(parsedNode[0], true)
-                File.editor.quickRefresh()
-                File.editor.selection.scrollAdjust()
-                File.editor.undo.exeCommand(parsedNode[0].redo.last())
-            }, 50)
+                this._normalizeAnchor(anchor)
+                this._refresh()
+                this._selectRange(cmd.cursorOffset)
+            }, 100)
         }
-        const selectRange = (offset) => {
-            const [start, end] = offset
-            if (start === 0 && end === 0) return
-
-            const { range, bookmark } = this.utils.getRangy()
-            bookmark.start += start
-            bookmark.end += end
-            range.moveToBookmark(bookmark)
-            range.select()
-        }
-
-        const params = this.input.split(this.config.FUNC_PARAM_SEPARATOR).slice(1)
-
-        switch (cmd.type) {
-            case this.TYPE.SNIPPET:
-            case this.TYPE.GENERATE_SNIPPET:
-                setTimeout(() => {
-                    normalizeAnchor()
-                    refresh()
-                    selectRange(cmd.cursorOffset)
-                }, 100)
-                return cmd.type === this.TYPE.SNIPPET ? cmd.callback : this._evalFunction(cmd.callback, ...params)
-            case this.TYPE.COMMAND:
-                normalizeAnchor()
-                const range = File.editor.selection.getRangy()
-                const textNode = anchor.containerNode.firstChild
-                range.setStart(textNode, anchor.start)
-                range.setEnd(textNode, anchor.end)
-                File.editor.selection.setRange(range, true)
-                File.editor.UserOp.pasteHandler(File.editor, "", true)
-                setTimeout(() => this._evalFunction(cmd.callback, ...params), 50)
-                break
-        }
-        return ""
+        return result
     }
 
     _beforeApply = suggest => {

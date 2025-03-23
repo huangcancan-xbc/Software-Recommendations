@@ -28,7 +28,7 @@
     "act.toggle_show_path": "悬停显示完整路径",
     "act.toggle_hide_title_bar": "一体化窗口样式时隐藏标题栏",
     "act.toggle_drag_style": "JetBrains 风格的标签拖拽方式",
-    "act.toggle_limit_y_axis": "拖拽时限制竖直移动",
+    "act.toggle_limit_y_axis": "限制竖直拖拽",
     "act.toggle_ctrl_click": "Ctrl+点击新窗口打开",
     "act.toggle_ctrl_wheel": "Ctrl+滚轮切换标签",
     "act.toggle_middle_click": "中键关闭标签",
@@ -43,8 +43,7 @@
     "func.showInFinder": "打开文件位置",
     "func.openInNewWindow": "新窗口打开",
     "modal.exit": "退出 Typora",
-    "modal.reconfirmExit": "确认退出？",
-    "modal.restart": "重启 Typora"
+    "modal.reconfirmExit": "确认退出？"
   },
   "search_multi": {
     "pluginName": "多元文件搜索",
@@ -499,9 +498,9 @@
     "act.toggle_hotkey": "显示快捷键",
     "act.show_action_icon": "为动作选项添加 ⌘ 图标",
     "act.hide_other_options": "隐藏除插件外的选项",
+    "act.find_lost_plugin": "列出所有的一级插件",
     "actHint.do_not_hide": "右键菜单点击后不会自动消失",
-    "achHint.disabled": "功能于此时不可用",
-    "modal.settingSuccessful": "设置成功"
+    "achHint.disabled": "功能于此时不可用"
   },
   "pie_menu": {
     "pluginName": "圆盘菜单"
@@ -520,8 +519,7 @@
     "info.json_rpc": "此插件面向开发者",
     "info.reopenClosedFiles": "此插件依赖「标签页管理」插件",
     "info.redirectLocalRootUrl": "此插件手动修改配置后才可运行",
-    "info.article_uploader": "此插件面向特殊人群，手动修改配置后才可运行",
-    "modal.settingSuccessful": "设置成功"
+    "info.article_uploader": "此插件面向特殊人群，手动修改配置后才可运行"
   },
   "file_counter": {
     "pluginName": "文件计数"
@@ -533,6 +531,7 @@
   },
   "help": {
     "pluginName": "帮助",
+    "act.set_language": "语言",
     "act.update_plugin": "升级插件",
     "act.preferences": "启停插件",
     "act.uninstall_plugin": "卸载插件",
@@ -552,7 +551,7 @@
     "uninstall.title": "卸载插件系统",
     "uninstall.hint": "请输入「{{reconfirm}}」启动自毁程序",
     "uninstall.reconfirmInput": "卸载插件系统",
-    "uninstall.incorrectContent": "请输入正确的内容",
+    "uninstall.incorrectContent": "请输入正确的卸载指令",
     "uninstall.ok": "卸载成功",
     "uninstall.okMsg": "插件系统已经卸载"
   },
@@ -726,8 +725,8 @@
     "func.close": "关闭",
     "func.move": "移动",
     "func.refresh": "刷新",
-    "func.toggleSourceMode": "切换源码模式（也可以在表格中右键点击）",
-    "func.fixAll": "自动修复错误",
+    "func.toggleSourceMode": "切换源码模式（也可以在表格中单击右键）",
+    "func.fixAll": "修复格式错误",
     "func.translate": "翻译",
     "func.detailAll": "详细信息",
     "func.settings": "当前配置",
@@ -742,7 +741,7 @@
     "MD009": "行末空格不合规",
     "MD010": "缩进应使用空格代替Tab",
     "MD011": "链接的中括号和圆括号位置颠倒",
-    "MD012": "不应有连续空行",
+    "MD012": "连续空行过多",
     "MD013": "此行过长",
     "MD014": "代码块中的终端命令除非后接其输出，否则不能前接$符号",
     "MD018": "ATX标题格式下，#符号和文字之间需空一格",
@@ -784,7 +783,8 @@
     "MD054": "链接和图片格式应一致",
     "MD055": "表格分隔符格式应一致",
     "MD056": "表格列数应一致",
-    "MD058": "表格前后需用空行隔开"
+    "MD058": "表格前后需用空行隔开",
+    "MD101": "公式块前后需用空行隔开"
   },
   "reopenClosedFiles": {
     "pluginName": "打开上次退出时尚未关闭的标签页"
