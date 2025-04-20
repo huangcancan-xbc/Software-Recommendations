@@ -1,6 +1,6 @@
 class searchMultiPlugin extends BasePlugin {
     styleTemplate = () => {
-        const colors_style = this.config.STYLE_COLOR
+        const colors_style = this.config.HIGHLIGHT_COLORS
             .map((color, idx) => `.cm-plugin-highlight-hit-${idx} { background-color: ${color} !important; }`)
             .join("\n")
         return { colors_style }
@@ -309,8 +309,10 @@ class QualifierMixin {
                 return operand
             }
             switch (operand.toLowerCase()) {
+                case "y":
                 case "yes":
                     return "true"
+                case "n":
                 case "no":
                     return "false"
                 default:
@@ -454,7 +456,7 @@ class Searcher {
         this.config = plugin.config
         this.utils = plugin.utils
         this.i18n = plugin.i18n
-        this.parser = plugin.utils.searchStringParser
+        this.parser = plugin.utils.searchQueryParser
         this.qualifiers = new Map()
     }
 

@@ -60,8 +60,9 @@ class markmapPlugin extends BasePlugin {
     }
 
     assignOptions = (update, old) => {
-        const update_ = this.utils.fromObject(update, ["spacingHorizontal", "spacingVertical", "fitRatio", "paddingX", "autoFit"]);
-        const options = this.MarkmapLib.deriveOptions({ ...old, ...update });
+        const attrs = ["spacingHorizontal", "spacingVertical", "fitRatio", "paddingX", "autoFit"]
+        const update_ = this.utils.pick(update, attrs)
+        const options = this.MarkmapLib.deriveOptions({ ...old, ...update })
         return Object.assign(options, update_)
     }
 
@@ -94,7 +95,7 @@ class fenceMarkmap {
 
     process = () => {
         this.utils.diagramParser.register({
-            lang: this.config.LANGUAGE,
+            lang: this.config.FENCE_LANGUAGE,
             mappingLang: "markdown",
             destroyWhenUpdate: false,
             renderFunc: this.render,
@@ -112,7 +113,7 @@ class fenceMarkmap {
         const frontMatter = `---\nmarkmap:\n  zoom: false\n  pan: false\n  height: 300px\n  backgroundColor: "#f8f8f8"\n---\n\n`
         const md = type === "draw_fence_template"
             ? this.config.FENCE_TEMPLATE
-            : `${backQuote}${this.config.LANGUAGE}\n${frontMatter}${this.controller.getToc() || "# empty"}\n${backQuote}`
+            : `${backQuote}${this.config.FENCE_LANGUAGE}\n${frontMatter}${this.controller.getToc() || "# empty"}\n${backQuote}`
         this.utils.insertText(null, md)
     }
 
@@ -436,10 +437,10 @@ class tocMarkmap {
                         this.utils.callPluginFunction("collapse_paragraph", "trigger", head, !isFold)
                     }
                 } else {
-                    if (this.config.CLICK_TO_LOCALE) {
+                    if (this.config.CLICK_TO_POSITIONING) {
                         if (this.config.AUTO_UPDATE) {
                             const { height: contentHeight, top: contentTop } = this.entities.content.getBoundingClientRect()
-                            const height = contentHeight * this.config.LOCALE_HEIGHT_RATIO + contentTop
+                            const height = contentHeight * this.config.POSITIONING_VIEWPORT_HEIGHT + contentTop
                             const showHiddenElement = !this.config.AUTO_COLLAPSE_PARAGRAPH_WHEN_FOLD
                             this.utils.scrollByCid(cid, height, true, showHiddenElement)
                         }
@@ -451,9 +452,10 @@ class tocMarkmap {
             const fn = ["expand", "shrink", "fit", "download", "setting", "close", "pinTop", "pinRight", "hideToolbar", "showToolbar"]
             const menuMap = this.i18n.entries(fn, "func.")
             const showMenu = () => {
-                const fullScreen = this.entities.fullScreen.getAttribute("action");
-                const toolbarVisibility = this.utils.isHidden(this.entities.header) ? "showToolbar" : "hideToolbar";
-                return this.utils.fromObject(menuMap, [toolbarVisibility, fullScreen, "fit", "pinTop", "pinRight", "setting", "download", "close"])
+                const fullScreen = this.entities.fullScreen.getAttribute("action")
+                const toolbarVisibility = this.utils.isHidden(this.entities.header) ? "showToolbar" : "hideToolbar"
+                const attrs = [toolbarVisibility, fullScreen, "fit", "pinTop", "pinRight", "setting", "download", "close"]
+                return this.utils.pick(menuMap, attrs)
             }
             const callback = ({ key }) => this._onButtonClick(key);
             this.utils.contextMenu.register("markmap", "#plugin-markmap-svg", showMenu, callback);
@@ -504,7 +506,7 @@ class tocMarkmap {
         const varNames = "filename、timestamp、random、uuid"
         const extNames = Downloader.getFormats()[0].extensions.join("、")
         const info = [
-            "color", "maxWidth", "AUTO_UPDATE", "CLICK_TO_LOCALE", "LOCALE_HEIGHT_RATIO",
+            "color", "maxWidth", "AUTO_UPDATE", "CLICK_TO_POSITIONING", "POSITIONING_VIEWPORT_HEIGHT",
             "FIX_ERROR_LEVEL_HEADER", "AUTO_COLLAPSE_PARAGRAPH_WHEN_FOLD", "FOLDER", "IMAGE_QUALITY", "BACKGROUND_COLOR",
             "KEEP_ALPHA_CHANNEL", "REMOVE_FOREIGN_OBJECT",
         ]
@@ -576,9 +578,9 @@ class tocMarkmap {
             { fieldset, type: "range", min: 0.5, max: 1, step: 0.01, ...inlineWidget("fitRatio") },
             { fieldset, type: "range", min: 20, max: 95, step: 1, ...inlineWidget("WIDTH_PERCENT_WHEN_INIT") },
             { fieldset, type: "range", min: 20, max: 95, step: 1, ...inlineWidget("HEIGHT_PERCENT_WHEN_INIT") },
-            { fieldset, type: "range", min: 20, max: 95, step: 1, ...inlineWidget("HEIGHT_PERCENT_WHEN_PIN_UP") },
+            { fieldset, type: "range", min: 20, max: 95, step: 1, ...inlineWidget("HEIGHT_PERCENT_WHEN_PIN_TOP") },
             { fieldset, type: "range", min: 20, max: 95, step: 1, ...inlineWidget("WIDTH_PERCENT_WHEN_PIN_RIGHT") },
-            { fieldset, type: "range", min: 0.1, max: 0.95, step: 0.01, ...inlineWidget("LOCALE_HEIGHT_RATIO") },
+            { fieldset, type: "range", min: 0.1, max: 0.95, step: 0.01, ...inlineWidget("POSITIONING_VIEWPORT_HEIGHT") },
         ]
 
         const behavior = (legend = this.i18n.t("settingGroup.behavior")) => {
@@ -588,11 +590,11 @@ class tocMarkmap {
                 generalWidget("zoom"),
                 generalWidget("pan"),
                 generalWidget("AUTO_UPDATE"),
-                generalWidget("CLICK_TO_LOCALE"),
+                generalWidget("CLICK_TO_POSITIONING"),
                 generalWidget("autoFit"),
                 generalWidget("AUTO_FIT_WHEN_UPDATE"),
                 generalWidget("AUTO_FIT_WHEN_RESIZE"),
-                generalWidget("REMEMBER_FOLD_WHEN_UPDATE"),
+                generalWidget("KEEP_FOLD_STATE_WHEN_UPDATE"),
                 generalWidget("AUTO_COLLAPSE_PARAGRAPH_WHEN_FOLD", { disabled: !hasPlugin }),
             ]
             return { label: "", legend, ...checkboxWidget(components) }
@@ -619,10 +621,10 @@ class tocMarkmap {
         const op = { title, components, width: "500px" }
         const { response } = await this.utils.dialog.modalAsync(op)
         if (response === 1) {
-            components.forEach(c => c.callback(c.submit));
-            await this.redraw(this.markmap.options);
-            const update = this.utils.fromObject(this.config, needUpdateKey);
-            await this.utils.runtime.saveConfig(this.controller.fixedName, update);
+            components.forEach(c => c.callback(c.submit))
+            await this.redraw(this.markmap.options)
+            const update = this.utils.pick(this.config, needUpdateKey)
+            await this.utils.settings.saveSettings(this.controller.fixedName, update)
         }
     }
 
@@ -681,7 +683,7 @@ class tocMarkmap {
         if (this.pinUtils.isPinTop) {
             toggleFunc = "add";
             const { top, height, width, left } = this.contentOriginRect;
-            const newHeight = height * this.config.HEIGHT_PERCENT_WHEN_PIN_UP / 100;
+            const newHeight = height * this.config.HEIGHT_PERCENT_WHEN_PIN_TOP / 100;
             modalRect = { left, top, width, height: newHeight };
             contentTop = top + newHeight;
             showFunc = "show";
@@ -835,7 +837,7 @@ class tocMarkmap {
     }
 
     _setFold = newRoot => {
-        if (!this.config.REMEMBER_FOLD_WHEN_UPDATE) return
+        if (!this.config.KEEP_FOLD_STATE_WHEN_UPDATE) return
 
         const needFold = new Set()
         const { data: oldRoot } = this.markmap.state || {}

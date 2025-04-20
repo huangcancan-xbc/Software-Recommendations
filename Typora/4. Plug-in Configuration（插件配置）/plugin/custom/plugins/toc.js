@@ -55,7 +55,7 @@ class tocPlugin extends BaseCustomPlugin {
 
                 if (!node && !icon) return;
                 if (node) {
-                    const cid = node.getAttribute("ref");
+                    const cid = node.dataset.ref
                     this.utils.scrollByCid(cid, -1, true);
                 } else if (icon) {
                     this.refresh(icon.dataset.type);
@@ -136,15 +136,13 @@ class tocPlugin extends BaseCustomPlugin {
     }
 
     refresh = type => {
-        if (!this.isModalShow()) return;
-        type = type || this.getCurrentType();
-        this._setIconActive(type);
-        const root = this._getRoot(type);
-        const headers = this._getRootTemplate(root);
-        const list = this.utils.htmlTemplater.create(headers);
-        this.entities.list.firstElementChild && this.entities.list.removeChild(this.entities.list.firstElementChild);
-        this.entities.list.appendChild(list);
-        this.highlightVisibleHeader();
+        if (this.isModalShow()) {
+            type = type || this.getCurrentType()
+            this._setIconActive(type)
+            const root = this._getRoot(type)
+            this.entities.list.innerHTML = this._getRootHTML(root)
+            this.highlightVisibleHeader()
+        }
     }
 
     _setIconActive = type => this.entities.header.children.forEach(ele => ele.classList.toggle("select", ele.dataset.type === type))
@@ -187,7 +185,7 @@ class tocPlugin extends BaseCustomPlugin {
 
         const targetCid = headers[activeIndex].getAttribute("cid");
         this.entities.list.querySelectorAll(".toc-node.active").forEach(ele => ele.classList.remove("active"));
-        const targetNode = this.entities.list.querySelector(`.toc-node[ref=${targetCid}]`);
+        const targetNode = this.entities.list.querySelector(`.toc-node[data-ref=${targetCid}]`);
         if (!targetNode) return;
 
         targetNode.classList.add("active");
@@ -196,8 +194,15 @@ class tocPlugin extends BaseCustomPlugin {
     _getRoot = type => (type === "header") ? this.utils.getTocTree(this.config.escape_header) : this._getKindRoot([type]);
 
     _getKindRoot = types => {
+        const includeHeadings = types.some(type => this.config.include_headings[type])
+        if (includeHeadings) {
+            types.push("h1", "h2")
+        }
+
         const idxMap = { table: 0, fence: 0, image: 0, link: 0, math: 0 };
         const typeMap = {
+            h1: ":scope > h1",
+            h2: ":scope > h2",
             table: ".md-table",
             fence: ".md-fences",
             image: ".md-image",
@@ -206,7 +211,7 @@ class tocPlugin extends BaseCustomPlugin {
         }
         const root = { depth: 0, cid: "n0", text: "root", children: [] };
         const current = { C: root, H1: root };
-        const selector = ":scope>h1, :scope>h2, " + types.map(t => typeMap[t]).join(" , ");
+        const selector = types.map(t => typeMap[t]).join(" , ")
         const imageHasAlt = document.querySelector(".md-image[data-alt]");
         this.utils.entities.eWrite.querySelectorAll(selector).forEach(ele => {
             if (ele.style.display === "none") return;
@@ -236,27 +241,30 @@ class tocPlugin extends BaseCustomPlugin {
             if (type) {
                 idxMap[type]++;
                 const cid = ele.closest("[cid]").getAttribute("cid");
-                let text = `${this.config.show_name[type]} ${idxMap[type]}`;
-                if (imageHasAlt && type === "image") {
-                    text += ` ${ele.dataset.alt}`;
-                }
-                current.C.children.push({ cid, children, text });
+                const prefix = this.config.show_name[type]
+                const idx = idxMap[type] + ""
+                const extra = (imageHasAlt && type === "image") ? ele.dataset.alt : ""
+                const text = [prefix, idx, extra].filter(Boolean).join(" ")
+                current.C.children.push({ cid, children, text })
             }
         });
         return root
     }
 
-    _getRootTemplate = rootNode => {
-        const getTemplate = rootNode => {
-            const { text, cid, depth, class_ = "", children = [] } = rootNode;
-            const content = [{ class_: `toc-node ${class_}`, ref: cid, children: [{ ele: "span", class_: "toc-text", text }] }];
-            const list = children.map(getTemplate);
-            if (list.length) {
-                content.push({ ele: "ul", children: list });
+    _getRootHTML = rootNode => {
+        const genLi = node => {
+            const { text, cid, depth, class_ = "", children = [] } = node
+            const t = this.utils.escape(text)
+            let content = `<div class="toc-node ${class_}" data-ref="${cid}"><span class="toc-text">${t}</span></div>`
+            if (children.length !== 0) {
+                const li = children.map(genLi).join("")
+                content += `<ul>${li}</ul>`
             }
-            return { ele: "li", depth, children: content }
+            return `<li data-depth="${depth}">${content}</li>`
         }
-        return { ele: "ul", class_: "toc-root", children: rootNode.children.map(getTemplate) }
+
+        const li = rootNode.children.map(genLi).join("")
+        return `<ul class="toc-root">${li}</ul>`
     }
 }
 

@@ -57,7 +57,7 @@ class slashCommandsPlugin extends BasePlugin {
         const trs = [...this.commands.values()].map(c => [c.keyword, getType(c.type), getScope(c.scope), getHint(c.hint)])
         const table = this.utils.buildTable([th, ...trs])
 
-        const onclick = ev => ev.target.closest("a") && this.utils.runtime.openSettingFolder()
+        const onclick = ev => ev.target.closest("a") && this.utils.settings.openSettingFolder()
         const editConfigLabel = i18n.editConfigFile + " " + '<a class="fa fa-external-link"></a>'
         const components = [{ label: editConfigLabel, type: "p", onclick }, { label: table, type: "p" }]
         const op = { title: this.pluginName, components, width: "550px" }
@@ -206,11 +206,13 @@ class slashCommandsPlugin extends BasePlugin {
 
     _clearAnchor = (anchor) => {
         const range = File.editor.selection.getRangy()
-        const textNode = anchor.containerNode.firstChild
-        range.setStart(textNode, anchor.start)
-        range.setEnd(textNode, anchor.end)
-        File.editor.selection.setRange(range, true)
-        File.editor.UserOp.pasteHandler(File.editor, "", true)
+        if (range) {
+            const textNode = anchor.containerNode.firstChild
+            range.setStart(textNode, anchor.start)
+            range.setEnd(textNode, anchor.end)
+            File.editor.selection.setRange(range, true)
+            File.editor.UserOp.pasteHandler(File.editor, "", true)
+        }
     }
 
     _normalizeAnchor = (anchor) => anchor.containerNode.normalize()

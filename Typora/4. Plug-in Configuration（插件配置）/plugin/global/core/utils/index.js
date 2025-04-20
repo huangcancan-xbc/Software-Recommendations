@@ -1,10 +1,8 @@
 const OS = require("os")
 const PATH = require("path")
 const FS = require("fs")
-const CHILD_PROCESS = require('child_process')
+const CHILD_PROCESS = require("child_process")
 const FS_EXTRA = require("fs-extra")
-const TOML = require("./common/toml")
-const { getHook } = require("./env")
 const { i18n } = require("../i18n")
 
 class utils {
@@ -25,7 +23,6 @@ class utils {
         Path: PATH,
         Fs: FS,
         FsExtra: FS_EXTRA,
-        Toml: TOML,
         ChildProcess: CHILD_PROCESS,
     })
 
@@ -286,10 +283,14 @@ class utils {
         }, Array.isArray(source) ? [] : {});
     }
 
-    static fromObject = (obj, attrs) => {
-        const newObj = {};
-        attrs.forEach(attr => obj[attr] !== undefined && (newObj[attr] = obj[attr]));
-        return newObj;
+    static pick = (obj, attrs) => {
+        if (!obj || typeof obj !== "object") {
+            return {}
+        }
+        const entries = attrs
+            .map(attr => [attr, obj[attr]])
+            .filter(([_, value]) => value !== undefined)
+        return Object.fromEntries(entries)
     }
 
     static asyncReplaceAll = (content, regexp, replaceFunc) => {
@@ -323,6 +324,40 @@ class utils {
             const v = c === 'x' ? r : (r & 0x3) | 0x8;
             return v.toString(16);
         });
+    }
+
+    static dateTimeFormat = (date = new Date(), format = "yyyy-MM-dd HH:mm:ss", locale = undefined) => {
+        const fns = {
+            yyyy: () => date.getFullYear().toString(),
+            yyy: () => (date.getFullYear() % 1000).toString().padStart(3, "0"),
+            yy: () => (date.getFullYear() % 100).toString().padStart(2, "0"),
+            MMMM: () => new Intl.DateTimeFormat(locale, { month: "long" }).format(date),
+            MMM: () => new Intl.DateTimeFormat(locale, { month: "short" }).format(date),
+            MM: () => (date.getMonth() + 1).toString().padStart(2, "0"),
+            M: () => (date.getMonth() + 1).toString(),
+            dddd: () => new Intl.DateTimeFormat(locale, { weekday: "long" }).format(date),
+            ddd: () => new Intl.DateTimeFormat(locale, { weekday: "short" }).format(date),
+            dd: () => date.getDate().toString().padStart(2, "0"),
+            d: () => date.getDate().toString(),
+            HH: () => date.getHours().toString().padStart(2, "0"),
+            H: () => date.getHours().toString(),
+            hh: () => ((date.getHours() % 12 || 12)).toString().padStart(2, "0"),
+            h: () => (date.getHours() % 12 || 12).toString(),
+            mm: () => date.getMinutes().toString().padStart(2, "0"),
+            m: () => date.getMinutes().toString(),
+            ss: () => date.getSeconds().toString().padStart(2, "0"),
+            s: () => date.getSeconds().toString(),
+            SSS: () => date.getMilliseconds().toString().padStart(3, "0"),
+            S: () => date.getMilliseconds().toString(),
+            a: () => {
+                const time = new Intl.DateTimeFormat(locale, { hour: "numeric", hour12: true })
+                    .formatToParts(date)
+                    .find(part => part.type === "dayPeriod")
+                return time ? time.value : ""
+            }
+        }
+        const regex = /(yyyy|yyy|yy|MMMM|MMM|MM|M|dddd|ddd|dd|d|HH|H|hh|h|mm|m|ss|s|SSS|S|a)/g
+        return format.replace(regex, (match) => fns[match] ? fns[match]() : match)
     }
 
     /** @description NOT a foolproof solution. */
@@ -527,15 +562,15 @@ class utils {
     }
 
     static readYaml = content => {
-        const yaml = require("./common/yaml");
+        const yaml = require("../lib/js-yaml")
         try {
-            return yaml.safeLoad(content);
+            return yaml.safeLoad(content)
         } catch (e) {
-            console.error(e);
+            console.error(e)
         }
     }
     static stringifyYaml = (obj, args) => {
-        const yaml = require("./common/yaml")
+        const yaml = require("../lib/js-yaml")
         try {
             return yaml.safeDump(obj, { lineWidth: -1, forceQuotes: true, styles: { "!!null": "lowercase" }, ...args })
         } catch (e) {
@@ -543,13 +578,13 @@ class utils {
         }
     }
 
-    static readToml = content => TOML.parse(content)
-    static stringifyToml = obj => TOML.stringify(obj)
+    static readToml = content => require("../lib/soml-toml").parse(content)
+    static stringifyToml = obj => require("../lib/soml-toml").stringify(obj)
     static readTomlFile = async filepath => this.readToml(await FS.promises.readFile(filepath, "utf-8"))
 
     static unzip = async (buffer, workDir) => {
         const output = [];
-        const jsZip = require("./common/jszip/jszip.min.js");
+        const jsZip = require("../lib/jszip")
         const zipData = await jsZip.loadAsync(buffer);
         for (const [name, file] of Object.entries(zipData.files)) {
             const dest = PATH.join(workDir, name);
@@ -606,7 +641,7 @@ class utils {
     static _markdownIt = null
     static getMarkdownIt = () => {
         if (!this._markdownIt) {
-            const { markdownit } = require("./common/markdown-it")
+            const { markdownit } = require("../lib/markdown-it")
             this._markdownIt = markdownit({ html: true, linkify: true, typographer: true })
         }
         return this._markdownIt
@@ -614,23 +649,23 @@ class utils {
     static parseMarkdownBlock = (content, options = {}) => this.getMarkdownIt().parse(content, options)
     static parseMarkdownInline = (content, options = {}) => this.getMarkdownIt().parseInline(content, options)
 
-    static fetch = async (url, { proxy, timeout = 3 * 60 * 1000, ...args }) => {
-        let signal, agent;
+    static fetch = async (url, { proxy = "", timeout = 3 * 60 * 1000, ...args }) => {
+        let signal, agent
         if (timeout) {
             if (AbortSignal && AbortSignal.timeout) {
-                signal = AbortSignal.timeout(timeout);
+                signal = AbortSignal.timeout(timeout)
             } else if (AbortController) {
-                const controller = new AbortController();
-                setTimeout(() => controller.abort(), timeout);
-                signal = controller.signal; // polyfill
+                const controller = new AbortController()
+                setTimeout(() => controller.abort(), timeout)
+                signal = controller.signal // polyfill
             }
         }
         if (proxy) {
-            const proxyAgent = require("./common/node-fetch/https-proxy-agent");
-            agent = new proxyAgent.HttpsProxyAgent(proxy);
+            const proxyAgent = require("../lib/https-proxy-agent")
+            agent = new proxyAgent.HttpsProxyAgent(proxy)
         }
-        const nodeFetch = require("./common/node-fetch/node-fetch");
-        return nodeFetch.nodeFetch(url, { agent, signal, ...args })
+        const nodeFetch = require("../lib/node-fetch")
+        return nodeFetch.fetch(url, { agent, signal, ...args })
     }
 
     static splitFrontMatter = content => {
@@ -806,7 +841,10 @@ class utils {
         }
     }
 
-    static scrollByCid = (cid, height = -1, moveCursor = false, showHiddenElement = true) => this.scroll(File.editor.findElemById(cid), height, moveCursor, showHiddenElement);
+    static scrollByCid = (cid, height = -1, moveCursor = false, showHiddenElement = true) => {
+        const $target = File.editor.findElemById(cid)
+        this.scroll($target, height, moveCursor, showHiddenElement)
+    }
 
     static scrollSourceView = lineToGo => {
         const cm = File.editor.sourceView.cm;
@@ -828,7 +866,8 @@ class utils {
         if (!elements) return;
 
         if (typeof elements === "string") {
-            elements = [...new DOMParser().parseFromString(elements, "text/html").body.childNodes];
+            const dom = new DOMParser().parseFromString(elements, "text/html")
+            elements = [...dom.body.childNodes]
         }
         let fragment = elements;
         if (elements instanceof Array || elements instanceof NodeList) {
@@ -847,9 +886,11 @@ class utils {
     }
 
     static findActiveNode = range => {
-        range = range || File.editor.selection.getRangy();
-        const markElem = File.editor.getMarkElem(range.anchorNode);
-        return File.editor.findNodeByElem(markElem)
+        range = range || File.editor.selection.getRangy()
+        if (range) {
+            const markElem = File.editor.getMarkElem(range.anchorNode)
+            return File.editor.findNodeByElem(markElem)
+        }
     }
 
     static getRangy = () => {
@@ -1025,6 +1066,74 @@ class utils {
                 }
             }
         }, detectInterval)
+    }
+}
+
+const newMixin = (utils) => {
+    const MIXIN = {
+        ...require("./settings"),
+        ...require("./migrate"),
+        ...require("./hotkeyHub"),
+        ...require("./eventHub"),
+        ...require("./stateRecorder"),
+        ...require("./exportHelper"),
+        ...require("./styleTemplater"),
+        ...require("./contextMenu"),
+        ...require("./notification"),
+        ...require("./progressBar"),
+        ...require("./dialog"),
+        ...require("./diagramParser"),
+        ...require("./thirdPartyDiagramParser"),
+        ...require("./entities"),
+        ...require("./extra"),
+        ...require("./searchQueryParser"),
+    }
+    const mixin = Object.fromEntries(
+        Object.entries(MIXIN).map(([name, cls]) => [[name], new cls(utils, i18n)])
+    )
+
+    // we should use composition to layer various functions, but utils is outdated and has become legacy code. My apologies
+    Object.assign(utils, mixin, {
+        /** @deprecated new API: utils.hotkeyHub.register */
+        registerHotkey: mixin.hotkeyHub.register,
+        /** @deprecated new API: utils.dialog.modal */
+        modal: mixin.dialog.modal
+    })
+
+    return mixin
+}
+
+const getHook = utils => {
+    const mixin = newMixin(utils)
+
+    const {
+        hotkeyHub, eventHub, stateRecorder, exportHelper, contextMenu,
+        notification, progressBar, dialog, diagramParser, thirdPartyDiagramParser, extra,
+    } = mixin
+
+    const registerMixin = (...ele) => Promise.all(ele.map(h => h.process && h.process()))
+    const optimizeMixin = () => Promise.all(Object.values(mixin).map(h => h.afterProcess && h.afterProcess()))
+
+    const registerPreMixin = async () => {
+        await registerMixin(extra)
+        await registerMixin(contextMenu, notification, progressBar, dialog, stateRecorder, hotkeyHub, exportHelper)
+    }
+
+    const registerPostMixin = async () => {
+        await registerMixin(eventHub)
+        await registerMixin(diagramParser, thirdPartyDiagramParser)
+        eventHub.publishEvent(eventHub.eventType.allPluginsHadInjected)
+    }
+
+    return async pluginLoader => {
+        await registerPreMixin()
+        await pluginLoader()
+        await registerPostMixin()
+        await optimizeMixin()
+        // Due to the use of async, some events may have been missed (such as afterAddCodeBlock), reload it
+        if (File.getMountFolder() != null) {
+            setTimeout(utils.reload, 50)
+        }
     }
 }
 

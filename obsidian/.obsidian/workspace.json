@@ -4,16 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "ce3699e94ca6061d",
+        "id": "19367f578b8b901c",
         "type": "tabs",
         "children": [
           {
-            "id": "2d2a51bbf7231230",
+            "id": "06a6af9334b24a0a",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Lambda表达式.md",
+                "file": "日程备忘/随手写.md",
                 "mode": "preview",
                 "source": false,
                 "backlinks": true,
@@ -28,7 +28,7 @@
                 }
               },
               "icon": "lucide-file",
-              "title": "Lambda表达式"
+              "title": "随手写"
             }
           }
         ]
@@ -51,7 +51,7 @@
               "type": "file-explorer",
               "state": {
                 "sortOrder": "alphabetical",
-                "autoReveal": true
+                "autoReveal": false
               },
               "icon": "lucide-folder-closed",
               "title": "文件列表"
@@ -63,7 +63,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "top",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -88,7 +88,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 347.501522064209
+    "width": 276.4920382499695
   },
   "right": {
     "id": "090a3bc7515ec58d",
@@ -152,13 +152,23 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Lambda表达式.md",
+                "file": "日程备忘/随手写.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Lambda表达式 的大纲"
+              "title": "随手写 的大纲"
+            }
+          },
+          {
+            "id": "95d22e722225336c",
+            "type": "leaf",
+            "state": {
+              "type": "quiet-outline",
+              "state": {},
+              "icon": "lines-of-text",
+              "title": "Quiet Outline"
             }
           }
         ],
@@ -166,7 +176,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 327.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -178,34 +188,45 @@
       "command-palette:打开命令面板": false
     }
   },
-  "active": "2d2a51bbf7231230",
+  "active": "06a6af9334b24a0a",
   "lastOpenFiles": [
-    "llround 的讲解.md",
-    "markdown基础语法.md",
-    "Lambda表达式.md",
-    "分析 CSS 文件每部分的作用.md",
-    "Obsidian/Git 提交的常见场景和命令.md",
-    "Obsidian/Git 版本迭代.md",
-    "C++/C++ STL 总结-基于算法竞赛（悠享版）.md",
-    "C++/C++ STL 总结-基于算法竞赛（悠享版） 1.md",
-    "Obsidian/域名.md",
-    "Linux/006 yum和Linux生态.md",
-    "Linux/005 权限的理解.md",
-    "Linux/001 环境搭建.md",
-    "C++/02 类与对象（上）.md",
-    "Linux/002 创建普通账户（为朋友创建、删除账户）.md",
+    "临时文件/科一.md",
+    "Linux/知识补充/Linux 进程控制详解：进程等待机制.md",
+    "Linux/知识补充/Linux 书籍强烈推荐.md",
     "Linux/011 Linux进程.md",
-    "Linux/003 系统和入门指令.md",
     "Linux/004 Linux基本指令.md",
-    "Linux/007 Linux 开发工具（上）—— vim、解放sudo、gc+.md",
-    "Linux/010 冯・诺依曼体系结构和操作系统.md",
-    "Obsidian/我的PicGo令牌.md",
-    "Obsidian/模板.md",
+    "Linux/006 yum和Linux生态.md",
+    "C++/C++ STL —— 基于算法竞赛.md",
+    "Linux/知识补充/status 的位布局（Linux 下）.canvas",
+    "Linux/非阻塞轮询.canvas",
+    "Linux/012 进程状态和优先级.md",
+    "Linux/005 权限的理解.md",
+    "临时文件/洛谷测试点信息.md",
+    "日程备忘/日程进度.md",
+    "日程备忘/随手写.md",
+    "临时文件/提问模板.md",
+    "git、GitHub/我的PicGo令牌.md",
+    "git、GitHub/Git 版本迭代.md",
+    "git、GitHub/git 清理.md",
+    "git、GitHub/Git 提交的常见场景和命令.md",
+    "git、GitHub/Gitee 和 GitHub 的「绿点」机制.md",
+    "git、GitHub/GitHub.md",
+    "git、GitHub/GitHub 仓库添加协议（许可证）.md",
+    "Obsidian/obsidian使用.md",
     "Obsidian/脱离大学学习法.md",
-    "Linux/009 进度条的实现.md",
-    "Linux/008 Linux 开发工具（下） —— make、Makefile、git和gdb.md",
-    "Obsidian/GitHub 仓库添加协议（许可证）.md",
-    "C++/06 模板初阶.md",
+    "Obsidian/模板.md",
+    "Obsidian/域名.md",
+    "git、GitHub",
+    "Linux/017 进程控制 —— 终止进程.md",
+    "C++/04 类与对象（下）.md",
+    "Linux/知识补充/程序进程地址空间.canvas",
+    "Linux/知识补充/附件/Pasted image 20250402131206.png",
+    "Linux/知识补充/附件",
+    "Obsidian/未命名.canvas",
+    "Linux/知识补充",
+    "临时文件",
+    "读书笔记",
+    "日程备忘",
     "Obsidian",
     "算法原理详细讲解：.markdown",
     "附件/Typora.pdf",

@@ -57,12 +57,12 @@ JETBRAINS_DRAG_STYLE = true
 # 标签标题显示设置：标签是否显示文件扩展名
 #   true:  标签标题将显示不带扩展名的文件名 (例如: filename.md 显示为 filename)
 #   false: 标签标题将显示完整的文件名 (例如: filename.md)
-REMOVE_FILE_SUFFIX = true
+TRIM_FILE_EXT = true
 
 # 同名文件显示设置：当打开多个同名文件时，是否显示文件的父目录，以便区分
 #   true:  当打开多个同名文件时，标签标题将显示父目录和文件名 (例如: filename.md 显示为 dir/filename.md)
 #   false: 只显示文件名，当有同名文件时可能导致混淆
-SHOW_DIR_FOR_SAME_NAME_FILE = true
+SHOW_DIR_ON_DUPLICATE = true
 
 # 鼠标悬停提示：当鼠标悬停在标签页上时，是否显示文件的完整路径
 #   true:  显示完整的文件路径，方便定位文件位置
@@ -91,7 +91,7 @@ TAB_MAX_WIDTH = "none"
 
 # 标签栏和内容间隙：设置标签栏和正文内容之间的间隙高度
 #   单位：像素 (px)
-GAP_BETWEEN_TAB_AND_CONTENT = 0
+TAB_CONTENT_GAP = 0
 
 # ------------------- 标签页拖拽增强（仅当 JETBRAINS_DRAG_STYLE 为 true 时生效） -------------------
 # Y轴防抖：在拖拽标签页时，如果垂直方向的移动距离很小，则保持标签页在 Y 轴上的位置不变
@@ -100,20 +100,20 @@ GAP_BETWEEN_TAB_AND_CONTENT = 0
 LIMIT_TAB_Y_AXIS_WHEN_DRAG = true
 
 # Y轴防抖幅度：当拖拽的垂直距离不超过标签页高度的多少倍时，视为无垂直移动
-#   例如：Y_AXIS_LIMIT_RANGE_WHEN_DRAG = 1 表示当垂直拖动距离不超过一个标签页高度时，保持 Y 轴位置不变
+#   例如：Y_AXIS_LIMIT_THRESHOLD = 1 表示当垂直拖动距离不超过一个标签页高度时，保持 Y 轴位置不变
 #   取值范围：大于等于 0 的数字，推荐取值 0.5 ~ 1.5 之间
-Y_AXIS_LIMIT_RANGE_WHEN_DRAG = 1
+Y_AXIS_LIMIT_THRESHOLD = 1
 
 # 禁止垂直拖拽：是否禁止标签页在垂直方向的拖拽移动
 #   true:  限制标签页只能水平拖动
 #   false: 允许标签页在垂直方向自由拖动
-LIMIT_TAB_ROI = false
+LOCK_DRAG_Y_AXIS = false
 
 # ------------------- 标签页拖拽高级功能 -------------------
 # 鼠标向下拖拽标签页时，当拖拽的垂直距离超过标签本身高度的多少倍时，将此标签页的文件在新窗口中打开
 #   -1: 不启用此功能
 #   大于0的数字：表示垂直拖拽的高度倍数（例如：2 表示当垂直拖动距离超过 2 个标签页高度时，会新建窗口打开）
-HEIGHT_SCALE = -1
+DRAG_NEW_WINDOW_THRESHOLD = -1
 
 # ------------------- 标签页行为 -------------------
 # 是否允许通过按住 Ctrl 键并点击标签页，在新窗口中打开该文件
@@ -124,7 +124,7 @@ CTRL_CLICK_TO_NEW_WINDOW = true
 # 是否允许通过按住 Ctrl 键并滚动鼠标滚轮来切换标签页
 #   true:  启用此功能
 #   false: 禁用此功能
-CTRL_WHEEL_TO_SCROLL = true
+CTRL_WHEEL_TO_SWITCH = true
 
 # 是否允许通过鼠标中键点击标签页来关闭该标签页
 #   true:  启用此功能
@@ -134,24 +134,24 @@ MIDDLE_CLICK_TO_CLOSE = true
 # 最大标签页数量限制：限制最多可以打开的标签页数量
 #   -1: 不限制标签页数量
 #   大于0的整数：表示最大标签页数量，超出时会自动关闭最左侧的标签页
-TAB_MAX_NUM = -1
+MAX_TAB_NUM = -1
 
 # 关闭最后一个标签页时的行为：当关闭最后一个标签页时，Typora的行为
 #   exit:      退出 Typora
 #   reconfirm: 弹出对话框，确认是否退出 Typora
 #   blankPage: 显示空白页 (仅新版本 Typora 支持，低版本会回退到 reconfirm)
-WHEN_CLOSE_LAST_TAB = "blankPage"
+LAST_TAB_CLOSE_ACTION = "blankPage"
 
 # 新建标签页的位置：当新建标签页时，新标签页在标签栏中的位置
 #   end:   在标签栏的最右侧
 #   right: 在当前标签页的右侧
-NEW_TAB_AT = "right"
+NEW_TAB_POSITION = "right"
 
 # 关闭标签页后激活的标签页：当关闭当前标签页时，应该激活哪个标签页
 #   left:   当前标签页的左侧的标签页
 #   right:  当前标签页的右侧的标签页
 #   latest: 上一个浏览的标签页
-ACTIVE_TAB_WHEN_CLOSE = "right"
+TAB_SWITCH_ON_CLOSE = "right"
 
 # ------------------- 快捷键（若置为 []，则不启用） -------------------
 # 关闭标签页的快捷键：设置关闭当前标签页的快捷键组合
@@ -259,7 +259,7 @@ SHOW_MTIME = false
 # ------------------- 高亮 -------------------
 # 关键字高亮的颜色列表
 # 每个关键字按顺序对应一个颜色，支持自定义多个颜色
-STYLE_COLOR = [
+HIGHLIGHT_COLORS = [
     "#BBEEFF", "#FFBBCC", "#88EE88", "#CCBBFF", "#FFEE88", "#FFFFA0", "#88CCCC", "#FFBB88", "#CCCCCC", "#FFAABB",
     "#99CCFF", "#FF99CC", "#66CC66", "#CC99FF", "#FFCC66", "#FFFF80", "#DD9966", "#AAAAAA", "#66AAAA", "#DD6699",
 ]
@@ -330,12 +330,12 @@ BACKSPACE_TO_HIDE = true
 #   error:  仅在命令执行出现错误时弹出窗口显示错误信息
 #   silent: 总是静默执行，不显示任何输出
 #   echo:   立即弹出窗口并实时显示命令的输出，适合需要不断打印日志的耗时任务
-QUICK_EXEC_SHOW = "error"
+QUICK_RUN_DISPLAY = "error"
 
 # 控制在命令输入框中按下回车键或点击执行按钮时，命令执行结果的回显方式
 #   always: 等待程序执行完毕后，一次性输出执行结果
 #   echo:   立即回显程序输出，实时显示命令执行过程
-COMMIT_EXEC_SHOW = "echo"
+COMMIT_RUN_DISPLAY = "echo"
 
 # ------------------- 内建命令列表 -------------------
 # 预设的常用命令列表，用户可以通过插件快速执行这些命令
@@ -382,12 +382,6 @@ NAME = ""
 # 触发插件功能的快捷键组合
 HOTKEY = "ctrl+shift+b"
 
-# ------------------- 作用范围 -------------------
-# 是否仅在选中的文本区域内应用格式化
-#   true:  仅对选中的文本区域应用空格优化。未选中的文本不会受到影响
-#   false: 对整个文档应用空格优化
-FORMAT_IN_SELECTION_ONLY = false
-
 # ------------------- 忽略词组 -------------------
 # 指定不希望在内部或前后添加空格的词组列表
 #   插件不会在这些词组内部或前后添加额外的空格
@@ -397,7 +391,7 @@ IGNORE_WORDS = []
 # ------------------- 忽略正则 -------------------
 # 指定不希望在内部或前后添加空格的正则表达式列表
 #   插件不会在匹配这些正则表达式的文本内部或前后添加额外的空格
-IGNORE_PATTERNS = ["<br\\s*?/?>", ":[0-9a-z_\\-]+?:", "<u>.+?</u>", '<span style=".+?">.+?</span>']
+IGNORE_PATTERNS = ['<br\s*?/?>', ':[0-9a-z_\-]+?:', '<u>.+?</u>', '<span style=".+?">.+?</span>']
 
 
 ################### read_only ###################
@@ -579,7 +573,7 @@ AUTO_HIDE = true
 # 是否等待输入法输入完毕后再执行搜索
 #   true:  当使用中文输入法等输入时，等待输入完毕才触发搜索，避免输入过程中频繁搜索
 #   false: 输入过程中的每一个字符都会触发搜索
-IGNORE_WHEN_COMPOSITION = true
+PAUSE_ON_COMPOSITION = true
 
 # ------------------- 窗口外观 -------------------
 # 搜索工具栏在页面垂直方向的位置：设置搜索工具栏在页面顶部的位置，以百分比表示
@@ -649,7 +643,7 @@ MODIFIER_KEY = { TEMPORARY = "alt", PERSISTENT = "" }
 # 允许图片超出范围：当图片被放缩后，是否允许图片超出其父容器的边界
 #   true:  允许图片超出父容器范围显示
 #   false: 限制图片显示在其父容器内
-ALLOW_OVERSIZE = true
+ALLOW_EXCEED_LIMIT = true
 
 # 图片水平位置：设置调整后的图片在水平方向上的对齐方式
 #   center: 图片居中对齐
@@ -678,12 +672,12 @@ NAME = ""
 # 是否去除表格单元格最小宽度限制：控制是否去除表格单元格的最小宽度限制
 #   true:  去除最小宽度限制，允许单元格宽度调整到最小值
 #   false: 保留最小宽度限制
-REMOVE_MIN_WIDTH = true
+REMOVE_MIN_CELL_WIDTH = true
 
 # 单元格边线的拖拽范围：设置单元格边线拖拽时的最小范围（单位：px）
-#   例如：THRESHOLD = 20 表示拖拽距离不超过 20 像素时，视为无效拖拽
+#   例如：DRAG_THRESHOLD = 20 表示拖拽距离不超过 20 像素时，视为无效拖拽
 #   取值范围：大于等于 0 的数字，推荐取值 10 ~ 30 之间
-THRESHOLD = 20
+DRAG_THRESHOLD = 20
 
 # 记住表格放缩状态：控制是否记住表格的放缩状态，直到关闭 Typora
 #   true:  记住表格的放缩状态，直到关闭 Typora
@@ -793,17 +787,17 @@ AUTO_UPDATE = true
 # 点击思维导图节点是否跳转到文档对应章节
 #   true:  点击节点后，页面会滚动到文档中对应的标题位置
 #   false: 点击节点不会跳转到文档
-CLICK_TO_LOCALE = true
+CLICK_TO_POSITIONING = true
 
 # 定位时，目标章节滚动到视口的高度位置百分比
 #   取值范围：0 到 1 之间的浮点数
 #   - 0: 目标章节滚动到视口顶部
 #   - 1: 目标章节滚动到视口底部
 #   - 0.5: 目标章节滚动到视口中间位置
-#   仅当 CLICK_TO_LOCALE 为 true 时生效
-LOCALE_HEIGHT_RATIO = 0.2
+#   仅当 CLICK_TO_POSITIONING 为 true 时生效
+POSITIONING_VIEWPORT_HEIGHT = 0.2
 
-# 是否兼容文档中存在的跳级标题（违反 MD001 规范）
+# 是否兼容文档中存在的跳级标题（MD001 规范）
 #   true:  允许文档中存在跳级标题，并在思维导图中正确显示
 #   false: 会过滤掉跳级标题，只显示符合规范的连续标题层级
 FIX_ERROR_LEVEL_HEADER = true
@@ -821,7 +815,7 @@ AUTO_FIT_WHEN_RESIZE = true
 # 当文档内容更新导致思维导图更新时，已折叠的节点是否保持折叠状态
 #   true:  更新后，之前折叠的节点将保持折叠状态
 #   false: 更新后，所有节点将展开，需要重新手动折叠
-REMEMBER_FOLD_WHEN_UPDATE = true
+KEEP_FOLD_STATE_WHEN_UPDATE = true
 
 # 折叠思维导图节点时，是否自动折叠对应的章节内容（实验性特性，不推荐开启，依赖 collapse_paragraph 插件）
 #   true:  折叠节点时，同时折叠文档中对应的章节内容
@@ -838,7 +832,7 @@ HEIGHT_PERCENT_WHEN_INIT = 35
 
 # 当思维导图弹窗固定到页面顶部时，弹窗的高度占窗口高度的百分比
 #   取值范围：0 到 100 之间的整数
-HEIGHT_PERCENT_WHEN_PIN_UP = 30
+HEIGHT_PERCENT_WHEN_PIN_TOP = 30
 
 # 当思维导图弹窗固定到页面右侧时，弹窗的宽度占窗口宽度的百分比
 #   取值范围：0 到 100 之间的整数
@@ -846,7 +840,7 @@ WIDTH_PERCENT_WHEN_PIN_RIGHT = 50
 
 # 当鼠标悬停在思维导图节点上时，显示的边框样式
 #   可以使用 CSS 边框样式，例如 "2px solid red", "1px dashed #000000"
-BORDER_STYLE_WHEN_NODE_HOVER = "4px solid #FF7B00"
+NODE_BORDER_WHEN_HOVER = "4px solid #FF7B00"
 
 # 预设的配色方案列表：用于设置思维导图节点的颜色
 #   每个配色方案是一个颜色数组，插件会按顺序使用这些颜色
@@ -930,7 +924,7 @@ FENCE_HOTKEY = ""
 
 # 插入 markmap 代码块时使用的代码块语言
 #   强烈建议不要修改此项，如果修改，需要同时修改 FENCE_TEMPLATE 选项里的语言设置
-LANGUAGE = "markmap"
+FENCE_LANGUAGE = "markmap"
 
 # 插入的 markmap 代码块是否默认处于交互模式
 #   true:  默认处于交互模式，鼠标点击图表不会展开代码块，需要点击 "编辑" 按钮才能展开
@@ -1151,7 +1145,33 @@ POSITION_TABLE = "after"
 #   - selected: 是否选中此布局。若为 true，则使用此布局的编号格式
 #   - layout: 布局的具体设置
 [[auto_number.LAYOUTS]]
-name = "Layout::Decimal"
+name = "Layout::Decimal-H1"
+selected = false
+[auto_number.LAYOUTS.layout]
+content-h1 = "{c1}. "
+content-h2 = "{c1}.{c2} "
+content-h3 = "{c1}.{c2}.{c3} "
+content-h4 = "{c1}.{c2}.{c3}.{c4} "
+content-h5 = "{c1}.{c2}.{c3}.{c4}.{c5} "
+content-h6 = "{c1}.{c2}.{c3}.{c4}.{c5}.{c6} "
+outline-h1 = "{o1}. "
+outline-h2 = "{o1}.{o2} "
+outline-h3 = "{o1}.{o2}.{o3} "
+outline-h4 = "{o1}.{o2}.{o3}.{o4} "
+outline-h5 = "{o1}.{o2}.{o3}.{o4}.{o5} "
+outline-h6 = "{o1}.{o2}.{o3}.{o4}.{o5}.{o6} "
+toc-h1 = "{t1}. "
+toc-h2 = "{t1}.{t2} "
+toc-h3 = "{t1}.{t2}.{t3} "
+toc-h4 = "{t1}.{t2}.{t3}.{t4} "
+toc-h5 = "{t1}.{t2}.{t3}.{t4}.{t5} "
+toc-h6 = "{t1}.{t2}.{t3}.{t4}.{t5}.{t6} "
+table = "Table {t}"
+image = "Image {i}"
+fence = "Fence {f}"
+
+[[auto_number.LAYOUTS]]
+name = "Layout::Decimal-H2"
 selected = true
 [auto_number.LAYOUTS.layout]
 content-h1 = ""
@@ -1634,23 +1654,19 @@ ACTION_HOTKEYS = [
 ]
 
 # ------------------- 颜色 -------------------
-# 预设的颜色列表，用于选择文字的前景色、背景色和边框色
+# 预设的颜色，用于选择文字的前景色、背景色和边框色
 #   每种颜色使用十六进制 RGB 颜色码表示 (例如： "#FF0000" 表示红色)
-COLORS = [
-    "#330000", "#331900", "#333300", "#193300", "#003300", "#003319", "#003333", "#001933", "#000033", "#190033", "#330033", "#330019", "#000000",
-    "#660000", "#663300", "#666600", "#336600", "#006600", "#006633", "#006666", "#003366", "#000066", "#330066", "#660066", "#660033", "#202020",
-    "#990000", "#994C00", "#999900", "#4C9900", "#009900", "#00994C", "#009999", "#004C99", "#000099", "#4C0099", "#990099", "#99004C", "#404040",
-    "#CC0000", "#CC6600", "#CCCC00", "#66CC00", "#00CC00", "#00CC66", "#00CCCC", "#0066CC", "#0000CC", "#6600CC", "#CC00CC", "#CC0066", "#606060",
-    "#FF0000", "#FF8000", "#FFFF00", "#80FF00", "#00FF00", "#00FF80", "#00FFFF", "#0080FF", "#0000FF", "#7F00FF", "#FF00FF", "#FF007F", "#808080",
-    "#FF3333", "#FF9933", "#FFFF33", "#99FF33", "#33FF33", "#33FF99", "#33FFFF", "#3399FF", "#3333FF", "#9933FF", "#FF33FF", "#FF3399", "#A0A0A0",
-    "#FF6666", "#FFB266", "#FFFF66", "#B2FF66", "#66FF66", "#66FFB2", "#66FFFF", "#66B2FF", "#6666FF", "#B266FF", "#FF66FF", "#FF66B2", "#C0C0C0",
-    "#FF9999", "#FFCC99", "#FFFF99", "#CCFF99", "#99FF99", "#99FFCC", "#99FFFF", "#99CCFF", "#9999FF", "#CC99FF", "#FF99FF", "#FF99CC", "#E0E0E0",
-    "#FFCCCC", "#FFE5CC", "#FFFFCC", "#E5FFCC", "#CCFFCC", "#CCFFE5", "#CCFFFF", "#CCE5FF", "#CCCCFF", "#E5CCFF", "#FFCCFF", "#FFCCE5", "#FFFFFF",
+COLOR_TABLE = [
+    ["#330000", "#331900", "#333300", "#193300", "#003300", "#003319", "#003333", "#001933", "#000033", "#190033", "#330033", "#330019", "#000000"],
+    ["#660000", "#663300", "#666600", "#336600", "#006600", "#006633", "#006666", "#003366", "#000066", "#330066", "#660066", "#660033", "#202020"],
+    ["#990000", "#994C00", "#999900", "#4C9900", "#009900", "#00994C", "#009999", "#004C99", "#000099", "#4C0099", "#990099", "#99004C", "#404040"],
+    ["#CC0000", "#CC6600", "#CCCC00", "#66CC00", "#00CC00", "#00CC66", "#00CCCC", "#0066CC", "#0000CC", "#6600CC", "#CC00CC", "#CC0066", "#606060"],
+    ["#FF0000", "#FF8000", "#FFFF00", "#80FF00", "#00FF00", "#00FF80", "#00FFFF", "#0080FF", "#0000FF", "#7F00FF", "#FF00FF", "#FF007F", "#808080"],
+    ["#FF3333", "#FF9933", "#FFFF33", "#99FF33", "#33FF33", "#33FF99", "#33FFFF", "#3399FF", "#3333FF", "#9933FF", "#FF33FF", "#FF3399", "#A0A0A0"],
+    ["#FF6666", "#FFB266", "#FFFF66", "#B2FF66", "#66FF66", "#66FFB2", "#66FFFF", "#66B2FF", "#6666FF", "#B266FF", "#FF66FF", "#FF66B2", "#C0C0C0"],
+    ["#FF9999", "#FFCC99", "#FFFF99", "#CCFF99", "#99FF99", "#99FFCC", "#99FFFF", "#99CCFF", "#9999FF", "#CC99FF", "#FF99FF", "#FF99CC", "#E0E0E0"],
+    ["#FFCCCC", "#FFE5CC", "#FFFFCC", "#E5FFCC", "#CCFFCC", "#CCFFE5", "#CCFFFF", "#CCE5FF", "#CCCCFF", "#E5CCFF", "#FFCCFF", "#FFCCE5", "#FFFFFF"],
 ]
-
-# 颜色列表每行显示的颜色数量
-#   用于控制颜色选择面板的布局
-NUM_PER_LINE = 13
 
 # 默认颜色配置
 #   FOREGROUND: 默认前景色
@@ -1764,7 +1780,7 @@ NAME = ""
 #  若您不了解正则表达式，请勿修改
 #  注意：keyword 需要使用命名捕获组 kw
 #  默认值：匹配一个文本，该文本以 / 或 \ 开头，后面紧跟任意数量英文字母或数字，且该文本前面不可有 <
-TRIGGER_REGEXP = "(?<!<)[\\/\\\\](?<kw>\\w*)$"
+TRIGGER_REGEXP = '(?<!<)[\/\\](?<kw>\w*)$'
 
 # 显示命令候选框的时机
 #   on_input: 输入后立刻显示
@@ -1772,7 +1788,7 @@ TRIGGER_REGEXP = "(?<!<)[\\/\\\\](?<kw>\\w*)$"
 SUGGESTION_TIMING = "on_input"
 
 # ------------------- 匹配策略 -------------------
-# 命令的匹配策略：什么样的用户输入内容才能找到对应的命令
+# 命令的匹配策略：什么样的输入内容才能找到对应的命令
 #   prefix: 前缀。输入内容必须是命令的前缀。比如：输入 para 可找到 Paragraph 命令
 #   substr: 子串。输入内容必须是命令的子串。比如：输入 graph 可找到 Paragraph 命令
 #   abbr:   缩写。输入的每个字符按顺序出现在命令中。比如：输入 pgh 可找到 Paragraph 命令
@@ -1783,7 +1799,7 @@ MATCH_STRATEGY = "abbr"
 #   predefined:    按照下面 COMMANDS 选项的顺序
 #   lexicographic: 字典序（字母顺序）
 #   length_based:  长度顺序
-#   earliest_hit:  最早命中（越早出现命中字符就越排在前）。比如：输入 to 时，TOC 命令排在 Strong 命令前面，因为 t 在两者的出现顺序为 1 和 2
+#   earliest_hit:  最早命中
 ORDER_STRATEGY = "predefined"
 
 # ------------------- 进阶：命令参数 -------------------
@@ -1792,9 +1808,12 @@ ORDER_STRATEGY = "predefined"
 #   - 带参命令的调用形式为 /command_param1_param2。使用下划线进行分隔，第一项为动态命令的标识符，其余项为命令参数
 # 举例：
 #   - 无参命令 `H1` 的功能是将当前行转为一级标题。用户输入 /h1 即可调用此命令的回调函数
-#   - 带参命令 `BlockCodeGenerator` 的功能是快速创建多个代码块。用户输入 /blockCodeGenerator_go_java_bash 时，系统会自动获取参数 ["go", "java", "bash"] 传给此命令的回调函数，创建对应的代码块
+#   - 带参命令 `BlockCodeGenerator` 的功能是快速创建多个代码块。用户输入 /blockCodeGenerator_go_java_bash 时，插件会自动获取参数 ["go", "java", "bash"] 传给此命令的回调函数，创建对应的代码块
 
 # 命令的参数分离标识符
+#   强烈不建议修改此选项
+#   若执意修改，请同步修改 TRIGGER_REGEXP，使之匹配
+#   比如，若将此选项从下划线改成中划线 "-"，由于 \w 无法匹配中划线，会导致命令参数功能失效。因此需改成 TRIGGER_REGEXP = '(?<!<)[\/\\](?<kw>[0-9a-zA-Z_-]*)$'
 FUNC_PARAM_SEPARATOR = "_"
 
 # ------------------- 命令列表 -------------------
@@ -1884,11 +1903,11 @@ COMMANDS = [
     { enable = true, type = "snippet", icon = "🧩", keyword = "cursorOffsetExample", cursorOffset = [-23, -10], callback = "Enjoying Typora Plugin? Star us!" },
     { enable = true, type = "snippet", icon = "🧩", keyword = "SnippetExample", callback = "https://github.com/obgnail/typora_plugin" },
     # 动态文本片段
-    { enable = true, type = "gen-snp", icon = "🧩", keyword = "Datetime", callback = "() => new Date().toLocaleString(undefined, {hour12: false})" },
-    { enable = true, type = "gen-snp", icon = "🧩", keyword = "Date", callback = "() => { let d = new Date(); return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}` }" },
-    { enable = true, type = "gen-snp", icon = "🧩", keyword = "Time", callback = "() => { let d = new Date(); return `${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}` }" },
+    { enable = true, type = "gen-snp", icon = "🧩", keyword = "Datetime", callback = "() => this.utils.dateTimeFormat(new Date(), 'yyyy/MM/dd HH:mm:ss')" },
+    { enable = true, type = "gen-snp", icon = "🧩", keyword = "Date", callback = "() => this.utils.dateTimeFormat(new Date(), 'yyyy/MM/dd')" },
+    { enable = true, type = "gen-snp", icon = "🧩", keyword = "Time", callback = "() => this.utils.dateTimeFormat(new Date(), 'HH:mm:ss')" },
+    { enable = true, type = "gen-snp", icon = "🧩", keyword = "Weekday", callback = "() => this.utils.dateTimeFormat(new Date(), 'dddd')" },
     { enable = true, type = "gen-snp", icon = "🧩", keyword = "Timestamp", callback = "() => new Date().getTime().toString()" },
-    { enable = true, type = "gen-snp", icon = "🧩", keyword = "Weekday", callback = "() => new Date().toLocaleDateString(undefined, { weekday: 'long' })" },
     { enable = true, type = "gen-snp", icon = "🧩", keyword = "UUID", callback = "() => this.utils.getUUID()" },
     # 行内公式内才可使用
     { enable = true, type = "snippet", icon = "🧩", keyword = "alpha", hint = "α", scope = "inline_math", callback = "\\alpha " },
@@ -2121,7 +2140,7 @@ CTRL_WHEEL_TO_SCROLL_SIDEBAR_MENU = true
 # ------------------- 文本样式 -------------------
 # 文本字体粗细，填写 font-weight 的 CSS 值
 #   例如：设置为 "bold" 表示加粗文本
-#   若留空 ""，则保持默认字体粗细
+#   若为 "initial"，则保持默认字体粗细
 FONT_WEIGHT = "bold"
 
 # 文本字体颜色，填写 color 的 CSS 值

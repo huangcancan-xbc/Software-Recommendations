@@ -1,9 +1,6 @@
 [auto_number]
 ENABLE = false
 
-[window_tab]
-NEW_TAB_AT = "end"
-
 [toolbar]
 DEFAULT_TOOL = "plu"
 

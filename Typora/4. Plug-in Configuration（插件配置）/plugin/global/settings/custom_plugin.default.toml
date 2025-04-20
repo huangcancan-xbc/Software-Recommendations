@@ -66,7 +66,7 @@ WRAP = false
 # 当鼠标位于看板时，是否允许使用 ctrl + 鼠标滚轮 滚动看板
 #   true:  允许使用 ctrl + 鼠标滚轮 滚动看板
 #   false: 禁止使用 ctrl + 鼠标滚轮 滚动看板
-CTRL_WHEEL_TO_SCROLL = true
+CTRL_WHEEL_TO_SWITCH = true
 
 # ------------------- 内容样式 -------------------
 # 允许在任务描述框中使用 markdown 内联样式（code, strong, em, del, link, img）
@@ -873,7 +873,7 @@ template_variables = [
 #   {{ dateOffset(offset, format, locale) }}  指定偏移量后的日期
 #       参数 1: offset: 整数，表示天数的偏移量 (正数表示未来，负数表示过去)
 #       参数 2: format: 时间格式化字符串
-#       参数 3: locale: 语言环境，支持 cn、en (默认 en)
+#       参数 3: locale: 语言环境
 #   {{ yesterday }}            昨天日期。等同于 {{ dateOffset(-1) }}
 #   {{ tomorrow }}             明天日期。等同于 {{ dateOffset(1) }}
 #   {{ random }}               范围为 0-1 的随机浮点数
@@ -1053,9 +1053,12 @@ default_show_toc = false
 # 大纲目录的字体大小
 toc_font_size = "1em"
 
-# ------------------- 展示名称 -------------------
+# ------------------- 展示 -------------------
 # 用于配置在大纲中显示的特殊元素对应的名称
-show_name = { fence = "Fence", image = "Figure", table = "Table", link = "Link", math = "Math" }
+show_name = { fence = "Fence", image = "Image", table = "Table", link = "Link", math = "Math" }
+
+# 生成特殊元素的大纲，是否同时显示标题的内容
+include_headings = { fence = true, image = true, table = true, link = true, math = true }
 
 
 ################### resourceOperation ###################
@@ -1430,16 +1433,28 @@ custom_rules = [
 #   参考：https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md
 rule_config = { default = true, MD010 = { code_blocks = false }, MD012 = { maximum = 3 }, MD013 = false, MD024 = { siblings_only = true }, MD033 = false, MD041 = false, MD044 = { code_blocks = false, names = ["CSS", "C++", "HTML", "Java", "JavaScript", "Python", "Rust", "SQL", "TypeScript"] } }
 
-# 是否将检测规则的案文翻译为中文
-#   true:  翻译为中文
+# ------------------- 展示规则 -------------------
+# 是否翻译检测规则案文
+#   true:  翻译
 #   false: 不翻译，显示英文原文
 translate = true
 
+# 检测结果的排序规则
+#   lineNumber: 按行排序
+#   ruleName:   按规则名排序
+result_order_by = "lineNumber"
+
+# 展示的工具
+#   info:   具体的检测信息
+#   locate: 定位
+#   fix:    修复
+tools = ["info", "locate", "fix"]
+
 # ------------------- 弹窗样式 -------------------
 # 弹窗的宽度
-#   - auto:  根据文字自适应
-#   - 500px: 500 像素（可以是任何正整数）
-modal_width = "auto"
+#   - fit-content: 根据文字自适应
+#   - 500px      : 500 像素（可以是任何正整数）
+modal_width = "fit-content"
 
 # 弹窗的最大高度
 modal_max_height = "500px"
