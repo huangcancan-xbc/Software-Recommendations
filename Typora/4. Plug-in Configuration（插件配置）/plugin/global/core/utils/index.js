@@ -6,6 +6,8 @@ const FS_EXTRA = require("fs-extra")
 const { i18n } = require("../i18n")
 
 class utils {
+    static i18n = i18n
+
     static nodeVersion = process && process.versions && process.versions.node
     static electronVersion = process && process.versions && process.versions.electron
     static chromeVersion = process && process.versions && process.versions.chrome
@@ -32,9 +34,8 @@ class utils {
     static getPlugin = fixedName => global.__plugins__[fixedName]
     static getCustomPlugin = fixedName => global.__plugins__.custom && global.__plugins__.custom.plugins[fixedName]
     static getAllPluginSettings = () => global.__plugin_settings__
-    static getAllGlobalSettings = () => global.__global_settings__
     static getAllCustomPluginSettings = () => (global.__plugins__.custom && global.__plugins__.custom.pluginsSettings) || {}
-    static getGlobalSetting = name => global.__global_settings__[name]
+    static getGlobalSetting = name => global.__plugin_settings__.global[name]
     static getPluginSetting = fixedName => global.__plugin_settings__[fixedName]
     static getCustomPluginSetting = fixedName => this.getAllCustomPluginSettings()[fixedName]
     static tryGetPlugin = fixedName => this.getPlugin(fixedName) || this.getCustomPlugin(fixedName)
@@ -141,6 +142,9 @@ class utils {
 
     ////////////////////////////// pure function //////////////////////////////
     static noop = args => args
+
+    static safeEval = x => new Function(`return (${x})`)()
+    static unsafeEval = x => eval(`(${x})`)
 
     /** @description param fn cannot be an async function that returns promiseLike object */
     static throttle = (fn, delay) => {
@@ -293,6 +297,14 @@ class utils {
         return Object.fromEntries(entries)
     }
 
+    static pickBy = (obj, predicate) => {
+        if (!obj || typeof obj !== "object" || typeof predicate !== "function") {
+            return {}
+        }
+        const entries = Object.entries(obj).filter(([key, value]) => predicate(value, key, obj))
+        return Object.fromEntries(entries)
+    }
+
     static asyncReplaceAll = (content, regexp, replaceFunc) => {
         if (!regexp.global) {
             throw Error("regexp must be global");
@@ -404,6 +416,47 @@ class utils {
             }
         }
         return 0
+    }
+
+    static nestedPropertyHelpers = {
+        has: (obj, key) => {
+            if (key == null) {
+                return false
+            }
+            return key.split(".").every(k => {
+                if (obj && typeof obj === "object" && Object.hasOwn(obj, k)) {
+                    obj = obj[k]
+                    return true
+                }
+                return false
+            })
+        },
+        handle: (obj, key, handler) => {
+            if (key == null) return
+            const keys = key.split(".")
+            const lastKey = keys.pop()
+            let current = obj
+            for (const k of keys) {
+                if (current && typeof current === "object" && Object.hasOwn(current, k)) {
+                    current = current[k]
+                } else {
+                    throw new Error(`Object has no such nested property: ${key}`)
+                }
+            }
+            if (current && typeof current === "object") {
+                return handler(current, lastKey, key)
+            }
+        },
+        get: (obj, key) => this.nestedPropertyHelpers.handle(obj, key, (obj, lastKey) => obj[lastKey]),
+        set: (obj, key, val) => this.nestedPropertyHelpers.handle(obj, key, (obj, lastKey) => obj[lastKey] = val),
+        push: (obj, key, item) => this.nestedPropertyHelpers.handle(obj, key, (obj, lastKey) => obj[lastKey].push(item)),
+        removeIndex: (obj, key, idx) => this.nestedPropertyHelpers.handle(obj, key, (obj, lastKey) => obj[lastKey].splice(idx, 1)),
+        remove: (obj, key, val) => this.nestedPropertyHelpers.handle(obj, key, (obj, lastKey) => {
+            const idx = obj[lastKey].indexOf(val)
+            if (idx !== -1) {
+                return obj[lastKey].splice(idx, 1)
+            }
+        }),
     }
 
     ////////////////////////////// business file operation //////////////////////////////
@@ -563,21 +616,12 @@ class utils {
 
     static readYaml = content => {
         const yaml = require("../lib/js-yaml")
-        try {
-            return yaml.safeLoad(content)
-        } catch (e) {
-            console.error(e)
-        }
+        return yaml.safeLoad(content)
     }
     static stringifyYaml = (obj, args) => {
         const yaml = require("../lib/js-yaml")
-        try {
-            return yaml.safeDump(obj, { lineWidth: -1, forceQuotes: true, styles: { "!!null": "lowercase" }, ...args })
-        } catch (e) {
-            console.error(e)
-        }
+        return yaml.safeDump(obj, { lineWidth: -1, forceQuotes: true, styles: { "!!null": "lowercase" }, ...args })
     }
-
     static readToml = content => require("../lib/soml-toml").parse(content)
     static stringifyToml = obj => require("../lib/soml-toml").stringify(obj)
     static readTomlFile = async filepath => this.readToml(await FS.promises.readFile(filepath, "utf-8"))
@@ -629,15 +673,6 @@ class utils {
         return JSBridge.invoke("dialog.showMessageBox", op)
     }
 
-    static showRestartMessageBox = async (options) => {
-        const message = i18n.t("global", "reconfirmRestart")
-        const op = { type: "info", message, ...options }
-        const { response } = await this.showMessageBox(op)
-        if (response === 0) {
-            this.restartTypora()
-        }
-    }
-
     static _markdownIt = null
     static getMarkdownIt = () => {
         if (!this._markdownIt) {
@@ -651,14 +686,8 @@ class utils {
 
     static fetch = async (url, { proxy = "", timeout = 3 * 60 * 1000, ...args }) => {
         let signal, agent
-        if (timeout) {
-            if (AbortSignal && AbortSignal.timeout) {
-                signal = AbortSignal.timeout(timeout)
-            } else if (AbortController) {
-                const controller = new AbortController()
-                setTimeout(() => controller.abort(), timeout)
-                signal = controller.signal // polyfill
-            }
+        if (timeout && AbortSignal && AbortSignal.timeout) {
+            signal = AbortSignal.timeout(timeout)
         }
         if (proxy) {
             const proxyAgent = require("../lib/https-proxy-agent")
@@ -681,7 +710,12 @@ class utils {
         const yamlContent = content.slice(4, matchResult.index);
         const remainContent = content.slice(matchResult.index + matchResult[0].length);
         const yamlLineCount = (yamlContent.match(/\n/g) || []).length + 3;
-        const yamlObject = this.readYaml(yamlContent);
+        let yamlObject = {}
+        try {
+            yamlObject = this.readYaml(yamlContent)
+        } catch (e) {
+            console.error(e)
+        }
         return { yamlObject, remainContent, yamlLineCount }
     }
 
@@ -759,15 +793,6 @@ class utils {
     static hide = ele => ele.classList.add("plugin-common-hidden");
     static show = ele => ele.classList.remove("plugin-common-hidden");
     static toggleVisible = (ele, force) => ele.classList.toggle("plugin-common-hidden", force);
-
-    static showProcessingHint = () => this.show(document.querySelector(".plugin-wait-mask-wrapper"));
-    static hideProcessingHint = () => this.hide(document.querySelector(".plugin-wait-mask-wrapper"));
-    static withProcessingHint = async func => {
-        const wrapper = document.querySelector(".plugin-wait-mask-wrapper");
-        this.show(wrapper);
-        await func();
-        this.hide(wrapper);
-    }
 
     static isImgEmbed = img => img.complete && img.naturalWidth !== 0 && img.naturalHeight !== 0
 
@@ -1082,41 +1107,29 @@ const newMixin = (utils) => {
         ...require("./notification"),
         ...require("./progressBar"),
         ...require("./dialog"),
+        ...require("./form-dialog"),
         ...require("./diagramParser"),
         ...require("./thirdPartyDiagramParser"),
         ...require("./entities"),
-        ...require("./extra"),
-        ...require("./searchQueryParser"),
     }
-    const mixin = Object.fromEntries(
-        Object.entries(MIXIN).map(([name, cls]) => [[name], new cls(utils, i18n)])
-    )
-
-    // we should use composition to layer various functions, but utils is outdated and has become legacy code. My apologies
-    Object.assign(utils, mixin, {
-        /** @deprecated new API: utils.hotkeyHub.register */
-        registerHotkey: mixin.hotkeyHub.register,
-        /** @deprecated new API: utils.dialog.modal */
-        modal: mixin.dialog.modal
-    })
-
-    return mixin
+    return Object.fromEntries(Object.entries(MIXIN).map(([name, cls]) => [[name], new cls(utils, i18n)]))
 }
 
 const getHook = utils => {
     const mixin = newMixin(utils)
+    Object.assign(utils, mixin)
 
     const {
-        hotkeyHub, eventHub, stateRecorder, exportHelper, contextMenu,
-        notification, progressBar, dialog, diagramParser, thirdPartyDiagramParser, extra,
+        styleTemplater, hotkeyHub, eventHub, stateRecorder, exportHelper, contextMenu,
+        notification, progressBar, dialog, formDialog, diagramParser, thirdPartyDiagramParser,
     } = mixin
 
     const registerMixin = (...ele) => Promise.all(ele.map(h => h.process && h.process()))
     const optimizeMixin = () => Promise.all(Object.values(mixin).map(h => h.afterProcess && h.afterProcess()))
 
     const registerPreMixin = async () => {
-        await registerMixin(extra)
-        await registerMixin(contextMenu, notification, progressBar, dialog, stateRecorder, hotkeyHub, exportHelper)
+        await registerMixin(styleTemplater)
+        await registerMixin(contextMenu, notification, progressBar, dialog, formDialog, stateRecorder, hotkeyHub, exportHelper)
     }
 
     const registerPostMixin = async () => {
@@ -1130,7 +1143,7 @@ const getHook = utils => {
         await pluginLoader()
         await registerPostMixin()
         await optimizeMixin()
-        // Due to the use of async, some events may have been missed (such as afterAddCodeBlock), reload it
+        // Due to being an asynchronous function, some events (such as afterAddCodeBlock) may have been missed. Reload it
         if (File.getMountFolder() != null) {
             setTimeout(utils.reload, 50)
         }

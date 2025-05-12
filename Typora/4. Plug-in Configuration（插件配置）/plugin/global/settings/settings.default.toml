@@ -1,10 +1,3 @@
-#-------------------------------------------------------------------------
-#  请勿修改【settings.default.toml】文件，请阅读本目录下的【README.md】
-#  请勿修改【settings.default.toml】文件，请阅读本目录下的【README.md】
-#  请勿修改【settings.default.toml】文件，请阅读本目录下的【README.md】
-#-------------------------------------------------------------------------
-
-
 ################### global ###################
 [global]
 # ------------------- 总开关 -------------------
@@ -20,12 +13,6 @@ ENABLE = true
 #   zh-CN
 #   zh-TW
 LOCALE = "auto"
-
-# ------------------- 插件兼容性 -------------------
-# 不兼容警告：当 Typora 版本低于 0.9.98 时，是否显示不兼容警告
-#   true:  显示不兼容警告
-#   false: 不显示不兼容警告
-SHOW_INCOMPATIBLE_WARNING = true
 
 # ------------------- 交互模式退出 -------------------
 # 退出交互模式：设置如何退出代码块的交互状态
@@ -89,25 +76,17 @@ TAB_MIN_WIDTH = "100px"
 #   限制：不可超过 400px
 TAB_MAX_WIDTH = "none"
 
-# 标签栏和内容间隙：设置标签栏和正文内容之间的间隙高度
-#   单位：像素 (px)
-TAB_CONTENT_GAP = 0
-
 # ------------------- 标签页拖拽增强（仅当 JETBRAINS_DRAG_STYLE 为 true 时生效） -------------------
-# Y轴防抖：在拖拽标签页时，如果垂直方向的移动距离很小，则保持标签页在 Y 轴上的位置不变
-#   true:  启用 Y 轴防抖，提高拖拽时的精度，避免误操作
-#   false: 关闭 Y 轴防抖，允许标签页在垂直方向自由移动
-LIMIT_TAB_Y_AXIS_WHEN_DRAG = true
+# 标签页分离行为
+#  - free         : 无限制
+#  - resistant    : 存在拖动阻力
+#  - lockVertical : 禁止竖直移动
+TAB_DETACHMENT = "resistant"
 
-# Y轴防抖幅度：当拖拽的垂直距离不超过标签页高度的多少倍时，视为无垂直移动
-#   例如：Y_AXIS_LIMIT_THRESHOLD = 1 表示当垂直拖动距离不超过一个标签页高度时，保持 Y 轴位置不变
+# 分离阈值：当拖拽的垂直距离不超过标签页高度的 X 倍时，视为无垂直移动
+#   例如：DETACHMENT_THRESHOLD = 1 表示当垂直拖动距离不超过一个标签页高度时，视为无垂直移动
 #   取值范围：大于等于 0 的数字，推荐取值 0.5 ~ 1.5 之间
-Y_AXIS_LIMIT_THRESHOLD = 1
-
-# 禁止垂直拖拽：是否禁止标签页在垂直方向的拖拽移动
-#   true:  限制标签页只能水平拖动
-#   false: 允许标签页在垂直方向自由拖动
-LOCK_DRAG_Y_AXIS = false
+DETACHMENT_THRESHOLD = 1
 
 # ------------------- 标签页拖拽高级功能 -------------------
 # 鼠标向下拖拽标签页时，当拖拽的垂直距离超过标签本身高度的多少倍时，将此标签页的文件在新窗口中打开
@@ -352,7 +331,7 @@ COMMIT_RUN_DISPLAY = "echo"
 #   $m: 当前 Typora 侧边栏的根目录路径（挂载目录）
 BUILTIN = [
     # 占位符，不执行任何命令
-    { name = "", disable = false, shell = "cmd/bash", cmd = "" },
+    { name = "Default", disable = false, shell = "cmd/bash", cmd = "" },
     # 在资源管理器中打开当前文件所在目录
     { name = "Explorer", disable = false, shell = "powershell", cmd = "explorer $d" },
     # 在 VS Code 中打开当前文件
@@ -391,7 +370,7 @@ IGNORE_WORDS = []
 # ------------------- 忽略正则 -------------------
 # 指定不希望在内部或前后添加空格的正则表达式列表
 #   插件不会在匹配这些正则表达式的文本内部或前后添加额外的空格
-IGNORE_PATTERNS = ['<br\s*?/?>', ':[0-9a-z_\-]+?:', '<u>.+?</u>', '<span style=".+?">.+?</span>']
+IGNORE_PATTERNS = [':[0-9a-z_\-]+?:', '<br\s*?/?>', '<u>.+?</u>', '<span style=".+?">.+?</span>']
 
 
 ################### read_only ###################
@@ -475,7 +454,7 @@ BLUR_TYPE = "blur"
 # 鼠标悬停时可见：当鼠标悬停在非聚焦组件上时，是否使其恢复可见
 #   true:  鼠标悬停时恢复可见
 #   false: 鼠标悬停时依然保持模糊或隐藏 (当 BLUR_TYPE 为 "hide" 时此项失效)
-RESRTORE_WHEN_HOVER = true
+RESTORE_WHEN_HOVER = true
 
 # 模糊等级：设置非聚焦组件的模糊程度
 #   数值越大，模糊效果越明显
@@ -931,11 +910,11 @@ FENCE_LANGUAGE = "markmap"
 #   false: 默认不处于交互模式，鼠标点击图表可以直接展开代码块
 INTERACTIVE_MODE = true
 
-# 插入 markmap 代码块的默认高度
+# 图表默认高度
 #   可以使用 CSS 单位，例如 "300px", "20em", "50vh"
 DEFAULT_FENCE_HEIGHT = "300px"
 
-# 插入 markmap 代码块的默认背景颜色
+# 图表默认背景颜色
 #   可以使用 CSS 颜色值，例如 "#F0F0F0", "white", "rgb(240, 240, 240)"
 DEFAULT_FENCE_BACKGROUND_COLOR = "#F8F8F8"
 
@@ -1354,7 +1333,7 @@ ENABLE_FOLD = true
 #   false: 默认不折叠代码块
 DEFAULT_FOLD = false
 
-# 代码块折叠行数：开启默认折叠后，仅当代码块行数大于此值时才会被默认折叠
+# 代码块折叠阈值：开启默认折叠后，仅当代码块行数大于此值时才会被默认折叠
 #   设置为 0 则所有代码块都会被折叠
 DEFAULT_FOLD_THRESHOLD = 0
 
@@ -1377,7 +1356,7 @@ WAIT_RECOVER_INTERVAL = 1000
 #       参数: buttonElement - 按钮的 DOM 元素对象
 #       示例: "btn => console.log('btn has render')"，不需要则置为空字符串 ""
 #   ON_CLICK: 鼠标点击按钮时的回调函数字符串，点击时执行此函数
-#       参数: {ev, btn, cont, fence, cid, plu}，分别表示：click 事件对象，按钮的 DOM 元素对象，代码块文本内容，代码块的 DOM 元素对象，代码块的 CID，插件实例对象
+#       参数: {ev, btn, cont, fence, cm, cid, plu}，分别表示：click 事件对象，按钮的 DOM 元素，代码块文本内容，代码块的 DOM 元素, CodeMirror实例对象，代码块的 CID，插件实例对象
 #       示例: "({cont}) => console.log(cont)"。此项不可为空
 CUSTOM_BUTTONS = [
     { DISABLE = true, ICON = "fa fa-bomb", HINT = "demo", ON_INIT = "", ON_RENDER = "", ON_CLICK = "({cont}) => console.log(cont)" },
@@ -1406,22 +1385,22 @@ CUSTOM_BUTTONS = [
 #   - Alt-U         : redoSelection
 ENABLE_HOTKEY = true
 
-# 将当前行和上一行互换
+# 与上一行互换
 SWAP_PREVIOUS_LINE = "Shift-Alt-Up"
 
-# 将当前行和下一行互换
+# 与下一行互换
 SWAP_NEXT_LINE = "Shift-Alt-Down"
 
-# 复制当前行到上一行
+# 复制到上一行
 COPY_PREVIOUS_LINE = "Ctrl-Alt-Up"
 
-# 复制当前行到下一行
+# 复制到下一行
 COPY_NEXT_LINE = "Ctrl-Alt-Down"
 
-# 直接在上面新建一行
+# 在上方插入一行
 INSERT_LINE_PREVIOUS = "Shift-Ctrl-Enter"
 
-# 直接在下面新建一行
+# 在下方插入一行
 INSERT_LINE_NEXT = "Ctrl-Enter"
 
 # ------------------- 折叠功能 -------------------
@@ -1668,7 +1647,7 @@ COLOR_TABLE = [
     ["#FFCCCC", "#FFE5CC", "#FFFFCC", "#E5FFCC", "#CCFFCC", "#CCFFE5", "#CCFFFF", "#CCE5FF", "#CCCCFF", "#E5CCFF", "#FFCCFF", "#FFCCE5", "#FFFFFF"],
 ]
 
-# 默认颜色配置
+# 默认颜色
 #   FOREGROUND: 默认前景色
 #   BACKGROUND: 默认背景色
 #   BORDER    : 默认边框颜色
@@ -1942,21 +1921,21 @@ NAME = ""
 #   false: 不显示快捷键提示
 SHOW_PLUGIN_HOTKEY = true
 
-# 是否在动作选项的前面添加图标，和普通选项做区分
+# 是否在动作选项的前面添加 ⌘ 图标，和普通选项做区分
 #   true:  添加图标
 #   false: 不添加图标
 SHOW_ACTION_OPTIONS_ICON = true
+
+# 点击后是否隐藏菜单：控制点击右键菜单选项后，菜单是否自动隐藏
+#   true:  点击后不隐藏菜单
+#   false: 点击后隐藏菜单
+DO_NOT_HIDE = false
 
 # 右键菜单二、三级菜单的最小宽度：防止菜单过宽占用过多屏幕空间
 #   - ""      : 保持默认宽度 (和第一级菜单相同宽度)
 #   - inherit : 最小宽度根据文本长度自适应
 #   - 232px   : 最小宽度为 232px (可以设置为任何正整数值)
 MENU_MIN_WIDTH = ""
-
-# 点击后是否隐藏菜单：控制点击右键菜单选项后，菜单是否自动隐藏
-#   true:  点击后不隐藏菜单
-#   false: 点击后隐藏菜单
-DO_NOT_HIDE = false
 
 # ------------------- 菜单选项管理 -------------------
 # 移除右键菜单中除了插件以外的选项：控制是否只显示插件相关的右键菜单项
@@ -1996,7 +1975,6 @@ LIST = [
     "---",
     "pie_menu",
     "go_top",
-    "slash_commands",
     "text_stylize",
     "hotkeys",
     "editor_width_slider",
@@ -2005,6 +1983,7 @@ LIST = [
     "preferences",
     "updater",
     "---",
+    "slash_commands",
     "file_counter",
     "json_rpc",
     "test",
@@ -2096,10 +2075,22 @@ NAME = ""
 #   留空则不设置快捷键
 HOTKEY = ""
 
-# ------------------- 忽略插件列表 -------------------
-# 不允许通过此插件修改启停的插件列表
-#   列在此列表中的插件，将无法被 启停插件 启用或禁用
-IGNORE_PLUGINS = ["preferences", "right_click_menu", "custom", "json_rpc", "redirectLocalRootUrl", "article_uploader"]
+# 打开设置页面时，默认定位到哪个插件的菜单
+DEFAULT_MENU = "global"
+
+# 忽略配置依赖
+# 若为 true，将不再强制执行配置项之间的依赖关系
+IGNORE_CONFIG_DEPENDENCIES = false
+
+# 将插件的 fixedName 加入到搜索内容
+SEARCH_PLUGIN_FIXEDNAME = false
+
+# 配置页中对象类型的数据格式
+# 支持以下格式：
+#   JSON
+#   TOML
+#   YAML
+OBJECT_SETTINGS_FORMAT = "JSON"
 
 
 ################### file_counter ###################

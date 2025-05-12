@@ -1,10 +1,3 @@
-#-------------------------------------------------------------------------
-#  请勿修改【custom_plugin.default.toml】文件，请阅读本目录下的【README.md】
-#  请勿修改【custom_plugin.default.toml】文件，请阅读本目录下的【README.md】
-#  请勿修改【custom_plugin.default.toml】文件，请阅读本目录下的【README.md】
-#-------------------------------------------------------------------------
-
-
 ################### kanban ###################
 [kanban]
 # ------------------- 基础 -------------------
@@ -172,6 +165,7 @@ me: Supports basic Markdown syntax: **bold**, *italic*, `code`, ~~strikethrough~
 nickname1: Configuration can be modified using YAML front matter (similar to Markdown). \\n\\nThe `avatars` option sets user avatars. If an avatar is not configured, the user's initial is used as the avatar. \\n\\nTry adding `./assets/1.jpg` to the directory containing this file to see the corresponding user's avatar change.
 
 Note: Supports exporting to HTML, PDF, etc. This syntax is plugin-specific and not universal.
+```
 """
 
 
@@ -252,6 +246,7 @@ Code blocks are not supported (nested code blocks are discouraged).
 
 ## 2023-10-01
 Custom syntax; use with caution.
+```
 """
 
 
@@ -727,7 +722,7 @@ https://marp.app/
 # How to write slides
 
 Split pages by horizontal ruler (`---`). It's very simple! :satisfied:
-
+```
 """
 
 
@@ -764,12 +759,19 @@ set_title_color = true
 # 鼠标悬停在 fold callout 时展示其内容
 hover_to_show_fold_callout = true
 
-# icon 对应的字体。一旦修改此选项，就需要修改下面所有的 icon
+# icon 对应的图标字体。一旦修改此选项，就需要修改下面所有的 icon
 #   具体的 icon 值请参考
 #   - 旧版本 Typora: {your_typora_path}/resources/app/style/font-awesome-4.1.0/css/font-awesome.css
 #   - 新版本 Typora: {your_typora_path}/resources/style/font-awesome-4.1.0/css/font-awesome.css
 #   - 网络下载: https://www.adfwebmagazine.jp/wp-content/uploads/test_v4.1.pdf
 font_family = "FontAwesome"
+
+# Callouts 功能导出为 PDF 后不显示图标，因为导出过程中缺少必要的图标字体资源
+# 是否使用网络图标字体
+use_network_icon_when_exporting = true
+
+# 网络图标字体的 CDN 地址（强制 woff 格式）
+network_icon_url = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/fonts/fontawesome-webfont.woff"
 
 # callout 的类型
 #  - type            : 自定义的类型
@@ -1045,9 +1047,9 @@ right_click_outline_button_to_toggle = true
 #   例如： 20 表示占据页面 20% 的宽度
 width_percent_when_pin_right = 20
 
-# 每次打开 Typora 时，是否默认显示右侧大纲目录
-#   true:  默认显示右侧大纲目录
-#   false: 默认不显示右侧大纲目录
+# 每次打开 Typora 时，是否默认显示大纲目录
+#   true:  默认显示大纲目录
+#   false: 默认不显示大纲目录
 default_show_toc = false
 
 # 大纲目录的字体大小
@@ -1149,6 +1151,11 @@ hotkey = ""
 persistence = true
 
 # ------------------- 书签管理 -------------------
+# 修饰键：与鼠标左键结合使用
+#   支持 ctrl / alt / shift 的任意组合 (如 "shift+alt", "ctrl+shift")
+#   例如：若设置为 "alt"，则使用 Alt + 鼠标左键 标注书签
+modifier_key = "alt"
+
 # 当 alt + click 时，是否自动弹出书签管理器窗口
 #   true:  自动弹出书签管理器窗口
 #   false: 不自动弹出书签管理器窗口
@@ -1598,6 +1605,7 @@ buttons = [
     { disable = false, coordinate = [1, 0], size = "24px", icon = "fa fa-caret-up", callback = "go_top.goTop" },
     { disable = false, coordinate = [2, 0], size = "17px", icon = "fa fa-font", callback = "text_stylize.call" },
     { disable = false, coordinate = [3, 0], size = "17px", icon = "fa fa-align-justify", callback = "md_padding.call" },
+    { disable = false, coordinate = [4, 0], size = "17px", icon = "fa fa-gear", callback = "preferences.call" },
     { disable = false, coordinate = [0, 1], size = "18px", icon = "fa fa-sitemap", callback = "markmap.onButtonClick" },
     { disable = false, coordinate = [1, 1], size = "17px", icon = "fa fa-image", callback = "imageReviewer.callback" },
     { disable = false, coordinate = [2, 1], size = "17px", icon = "fa fa-list", callback = "toc.callback" },
