@@ -103,7 +103,7 @@
     align-items: center;
     height: 42px;
     line-height: 42px;
-    padding-left: 10px;
+    padding-left: 12px;
 }
 
 /***** general control *****/
@@ -160,6 +160,11 @@ textarea {
     resize: vertical;
     color: inherit;
     font-size: 14px;
+    line-height: 24px;
+}
+
+input::placeholder {
+    color: rgba(60, 60, 67, 0.6);
 }
 
 .text-input:disabled,
@@ -272,7 +277,7 @@ textarea {
 }
 
 .option-item[data-choose="true"]::before {
-    content: '✓';
+    content: "\2713";
     position: absolute;
     left: 6px;
 }
@@ -467,6 +472,10 @@ textarea {
     border-style: dashed;
 }
 
+.array-item-add:hover {
+    border-color: #F69815;
+}
+
 .array-item {
     transition: all .3s;
 }
@@ -492,46 +501,50 @@ textarea {
 }
 
 /***** table *****/
-table {
+.table table {
     width: 100%;
     text-align: left;
-    table-layout: fixed
+    table-layout: fixed;
 }
 
-th, td {
+.table th,
+.table td {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 
-th:last-child,
-td:last-child {
+.table th:last-child,
+.table td:last-child {
     text-align: right;
     width: 70px;
 }
 
-table .fa {
+.table .fa {
     font-size: 18px;
     cursor: pointer;
     border-radius: 50%;
     padding: 7px;
 }
 
-table .fa:hover {
+.table .fa:hover {
     background-color: rgba(31, 31, 31, .08);
 }
 
 /***** radio, check *****/
-.radio, .checkbox {
+.radio,
+.checkbox {
     width: 100%;
 }
 
-.radio-option, .checkbox-option {
+.radio-option,
+.checkbox-option {
     display: flex;
     align-items: center;
 }
 
-.radio-wrapper, .checkbox-wrapper {
+.radio-wrapper,
+.checkbox-wrapper {
     position: relative;
     display: inline-flex;
     cursor: pointer;
@@ -539,7 +552,8 @@ table .fa:hover {
     margin-left: 2px;
 }
 
-.radio-label, .checkbox-label {
+.radio-label,
+.checkbox-label {
     flex: 1;
     overflow: hidden;
     cursor: pointer;
@@ -550,7 +564,8 @@ table .fa:hover {
     min-height: 32px;
 }
 
-.radio-input, .checkbox-input {
+.radio-input,
+.checkbox-input {
     opacity: 0;
     position: absolute;
     left: 50%;
@@ -563,7 +578,8 @@ table .fa:hover {
     cursor: pointer;
 }
 
-.radio-disc, .checkbox-square {
+.radio-disc,
+.checkbox-square {
     width: 9px;
     height: 9px;
     background-color: transparent;
@@ -580,4 +596,53 @@ table .fa:hover {
 .radio-input:checked + .radio-disc,
 .checkbox-input:checked + .checkbox-square {
     background-color: #0B57D0;
+}
+
+/***** hint *****/
+.hint-wrap {
+    flex: 1;
+}
+
+.hint-header {
+    font-weight: bold;
+    line-height: 1.8em;
+}
+
+.hint-detail {
+    padding-top: 2px;
+    line-height: 1.5em;
+    font-size: 12px;
+    color: #999;
+}
+
+/***** custom *****/
+.custom-wrap {
+    flex: 1;
+}
+
+.custom-wrap table {
+    border-collapse: collapse;
+    font-size: 13px;
+    line-height: 1.6em;
+}
+
+.custom-wrap tr {
+    border-bottom: 1px solid rgba(150, 162, 170, 0.2);
+}
+
+.custom-wrap tbody tr:last-child {
+    border-bottom: none;
+}
+
+.custom-wrap th,
+.custom-wrap td {
+    padding: .65em 2px .65em 2px;
+}
+
+.custom-wrap table tr:last-child th {
+    padding-top: 0;
+}
+
+.custom-wrap table tr:last-child td {
+    padding-bottom: 0;
 }

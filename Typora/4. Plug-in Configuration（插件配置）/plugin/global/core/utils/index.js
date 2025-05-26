@@ -116,7 +116,7 @@ class utils {
     // after loadJimp(), you can use globalThis.Jimp
     // static loadJimp = async () => await $.getScript((File.isNode ? "./lib.asar" : "./lib") + "/jimp/browser/lib/jimp.min.js")
 
-    // static sendEmail = (email, subject = "", body = "") => reqnode("electron").shell.openExternal(`mailto:${email}?subject=${subject}&body=${body}`)
+    static sendEmail = (email, subject = "", body = "") => reqnode("electron").shell.openExternal(`mailto:${email}?subject=${subject}&body=${body}`)
 
     static downloadImage = async (src, folder, filename) => {
         folder = folder || this.tempFolder;
@@ -469,7 +469,7 @@ class utils {
      */
     static getCurrentFileContent = (shouldSave, contentType, skipSetContent, saveContext) => File.sync(shouldSave, contentType, skipSetContent, saveContext)
 
-    static editCurrentFile = async (replacement, reloadContent = true) => {
+    static editCurrentFile = async (replacement, writeFile = File.option.enableAutoSave) => {
         await this.fixScrollTop(async () => {
             const bak = File.presentedItemChanged
             File.presentedItemChanged = this.noop
@@ -479,14 +479,18 @@ class utils {
             const replaced = replacement instanceof Function
                 ? await replacement(content)
                 : replacement
-            if (filepath) {
-                const ok = await this.writeFile(filepath, replaced)
-                if (!ok) return
+            if (replaced !== content) {
+                if (!writeFile) {
+                    File.reloadContent(replaced)
+                } else {
+                    if (filepath) {
+                        const ok = await this.writeFile(filepath, replaced)
+                        if (ok) {
+                            File.reloadContent(replaced, { delayRefresh: true, skipChangeCount: true, skipStore: true })
+                        }
+                    }
+                }
             }
-            if (reloadContent) {
-                File.reloadContent(replaced, { delayRefresh: true, skipChangeCount: true, skipStore: true })
-            }
-
             setTimeout(() => File.presentedItemChanged = bak, 1500)
         })
     }
@@ -643,6 +647,31 @@ class utils {
         return output
     }
 
+    static walkDir = async (dir, fileFilter, dirFilter, paramsBuilder, callback) => {
+        const { Fs: { promises: { readdir, stat } }, Path } = this.Package
+
+        async function walk(dir) {
+            const files = await readdir(dir)
+            const promises = files.map(async file => {
+                const path = Path.join(dir, file)
+                const stats = await stat(path)
+                if (stats.isFile()) {
+                    if (fileFilter(path, stats)) {
+                        const params = await paramsBuilder(path, file, dir, stats)
+                        await callback(params)
+                    }
+                } else if (stats.isDirectory()) {
+                    if (dirFilter(file)) {
+                        await walk(path)
+                    }
+                }
+            })
+            await Promise.all(promises)
+        }
+
+        await walk(dir)
+    }
+
     ////////////////////////////// Business Operations //////////////////////////////
     static exitTypora = () => JSBridge.invoke("window.close");
     static restartTypora = (reopenClosedFiles = true) => {
@@ -761,7 +790,7 @@ class utils {
     }
 
     static getTocTree = useBuiltin => {
-        const root = { depth: 0, cid: "n0", text: this.getFileName(), children: [] }
+        const root = { depth: 0, cid: "n0", text: this.getFileName(), parent: null, children: [] }
         const stack = [root]
         const toc = useBuiltin
             ? File.editor.library.outline.getHeaderMatrix(true)
@@ -778,6 +807,7 @@ class utils {
                 stack.pop()
             }
             const parent = stack[stack.length - 1]
+            node.parent = parent
             parent.children.push(node)
             stack.push(node)
         })
@@ -913,17 +943,21 @@ class utils {
     static findActiveNode = range => {
         range = range || File.editor.selection.getRangy()
         if (range) {
-            const markElem = File.editor.getMarkElem(range.anchorNode)
+            const selection = window.getSelection()
+            const markElem = File.editor.getMarkElem(selection.anchorNode)
             return File.editor.findNodeByElem(markElem)
         }
     }
 
     static getRangy = () => {
-        const range = File.editor.selection.getRangy();
-        const markElem = File.editor.getMarkElem(range.anchorNode);
-        const node = File.editor.findNodeByElem(markElem);
-        const bookmark = range.getBookmark(markElem[0]);
-        return { range, markElem, node, bookmark }
+        const range = File.editor.selection.getRangy()
+        if (range) {
+            const selection = window.getSelection()
+            const markElem = File.editor.getMarkElem(selection.anchorNode)
+            const node = File.editor.findNodeByElem(markElem)
+            const bookmark = range.getBookmark(markElem[0])
+            return { range, markElem, node, bookmark }
+        }
     }
 
     static getRangyText = () => {
@@ -1110,6 +1144,7 @@ const newMixin = (utils) => {
         ...require("./form-dialog"),
         ...require("./diagramParser"),
         ...require("./thirdPartyDiagramParser"),
+        ...require("./mermaid"),
         ...require("./entities"),
     }
     return Object.fromEntries(Object.entries(MIXIN).map(([name, cls]) => [[name], new cls(utils, i18n)]))

@@ -57,13 +57,20 @@ class fenceEnhancePlugin extends BasePlugin {
                     const callbackFunc = evalFn(ON_CLICK)
                     const listener = (ev, btn) => callbackFunc(getParams(ev, btn))
                     const action = this.utils.randomString()
-                    const className = `custom-${action}`
-                    return [className, action, HINT, ICON, !DISABLE, listener, renderFunc]
+                    return {
+                        className: `custom-${action}`,
+                        action,
+                        hint: HINT,
+                        iconClassName: ICON,
+                        enable: !DISABLE,
+                        listener,
+                        extraFunc: renderFunc,
+                    }
                 } catch (e) {
                     console.error("custom button error:", e)
                 }
             })
-            customButtons.filter(Boolean).forEach(btn => this.registerButton(...btn))
+            customButtons.filter(Boolean).forEach(btn => this.registerButton(btn))
         }
 
         const registerBuiltinButtons = () => {
@@ -85,7 +92,6 @@ class fenceEnhancePlugin extends BasePlugin {
                 const cid = fence.getAttribute("cid")
                 File.editor.refocus(cid)
                 File.editor.fences.formatContent()
-
                 _changeIcon(btn, "fa fa-check", "fa fa-indent")
             }
             const foldCode = (ev, btn) => {
@@ -118,11 +124,35 @@ class fenceEnhancePlugin extends BasePlugin {
                 }
             }
             const builtinButtons = [
-                ["copy-code", "copyCode", this.i18n.t("btn.hint.copy"), "fa fa-clipboard", this.config.ENABLE_COPY, copyCode],
-                ["indent-code", "indentCode", this.i18n.t("btn.hint.indent"), "fa fa-indent", this.enableIndent, indentCode],
-                ["fold-code", "foldCode", this.i18n.t("btn.hint.fold"), "fa fa-minus", this.config.ENABLE_FOLD, foldCode, defaultFold],
+                {
+                    className: "copy-code",
+                    action: "copyCode",
+                    hint: this.i18n.t("btn.hint.copy"),
+                    iconClassName: "fa fa-clipboard",
+                    enable: this.config.ENABLE_COPY,
+                    listener: copyCode,
+                    extraFunc: null,
+                },
+                {
+                    className: "indent-code",
+                    action: "indentCode",
+                    hint: this.i18n.t("btn.hint.indent"),
+                    iconClassName: "fa fa-indent",
+                    enable: this.enableIndent,
+                    listener: indentCode,
+                    extraFunc: null,
+                },
+                {
+                    className: "fold-code",
+                    action: "foldCode",
+                    hint: this.i18n.t("btn.hint.fold"),
+                    iconClassName: "fa fa-minus",
+                    enable: this.config.ENABLE_FOLD,
+                    listener: foldCode,
+                    extraFunc: defaultFold,
+                },
             ]
-            builtinButtons.forEach(btn => this.registerButton(...btn))
+            builtinButtons.forEach(btn => this.registerButton(btn))
         }
 
         const handleLifecycleEvents = () => {
@@ -131,8 +161,9 @@ class fenceEnhancePlugin extends BasePlugin {
             })
 
             this.utils.eventHub.addEventListener(this.utils.eventHub.eventType.afterAddCodeBlock, cid => {
+                if (this.buttons.length === 0) return
                 const fence = this.utils.entities.querySelectorInWrite(`.md-fences[cid=${cid}]`)
-                if (!fence || this.buttons.length === 0) return
+                if (!fence) return
                 let enhance = fence.querySelector(".fence-enhance")
                 if (enhance) return
 
@@ -141,13 +172,26 @@ class fenceEnhancePlugin extends BasePlugin {
                 if (this.config.AUTO_HIDE) {
                     enhance.style.visibility = "hidden"
                 }
-                const buttons = this.buttons.map(b => b.createButton(this.config.REMOVE_BUTTON_HINT))
+                const buttons = this.buttons.map(btn => {
+                    const button = document.createElement("div")
+                    button.classList.add("enhance-btn", btn.className)
+                    button.setAttribute("action", btn.action)
+                    if (!this.config.REMOVE_BUTTON_HINT && btn.hint) {
+                        button.setAttribute("ty-hint", btn.hint)
+                    }
+                    if (!btn.enable) {
+                        button.style.display = "none"
+                    }
+                    const span = document.createElement("span")
+                    span.className = btn.iconClassName
+                    button.appendChild(span)
+                    return button
+                })
                 enhance.append(...buttons)
                 fence.appendChild(enhance)
-                this.buttons.forEach((builder, idx) => {
-                    const button = buttons[idx]
-                    if (builder.extraFunc) {
-                        builder.extraFunc(button, cid)
+                this.buttons.forEach((b, idx) => {
+                    if (b.extraFunc) {
+                        b.extraFunc(buttons[idx], cid)
                     }
                 })
             })
@@ -161,9 +205,9 @@ class fenceEnhancePlugin extends BasePlugin {
                 ev.stopPropagation()
                 document.activeElement.blur()
                 const action = target.getAttribute("action")
-                const builder = this.buttons.find(builder => builder.action === action)
-                if (builder) {
-                    builder.listener(ev, target)
+                const btn = this.buttons.find(b => b.action === action)
+                if (btn) {
+                    btn.listener(ev, target)
                 }
             })
             const config = this.config
@@ -184,11 +228,10 @@ class fenceEnhancePlugin extends BasePlugin {
         handleDomEvents()
     }
 
-    registerButton = (className, action, hint, iconClassName, enable, listener, extraFunc) => {
-        const b = new builder(className, action, hint, iconClassName, enable, listener, extraFunc)
-        this.buttons.push(b)
+    registerButton = ({ className, action, hint, iconClassName, enable, listener, extraFunc }) => {
+        this.buttons.push({ className, action, hint, iconClassName, enable, listener, extraFunc })
     }
-    unregisterButton = action => this.buttons = this.buttons.filter(builder => builder.action !== action)
+    unregisterButton = action => this.buttons = this.buttons.filter(btn => btn.action !== action)
 
     copyFence = fence => fence.querySelector(".copy-code").click()
     indentFence = fence => fence.querySelector(".indent-code").click()
@@ -200,30 +243,28 @@ class fenceEnhancePlugin extends BasePlugin {
         }
     }
 
-    getDynamicActions = (anchorNode, meta) => {
-        const DANGEROUS_HINT = this.i18n.t("actHint.dangerous")
-        return this.i18n.fillActions([
-            { act_value: "toggle_state_fold", act_state: this.config.ENABLE_FOLD },
-            { act_value: "toggle_state_copy", act_state: this.config.ENABLE_COPY },
-            { act_value: "toggle_state_indent", act_state: this.enableIndent, act_hidden: !this.supportIndent },
-            { act_value: "toggle_state_auto_hide", act_state: this.config.AUTO_HIDE },
-            { act_value: "toggle_state_default_fold", act_state: this.config.DEFAULT_FOLD },
-            { act_value: "toggle_state_button_hint", act_state: !this.config.REMOVE_BUTTON_HINT },
-            { act_value: "add_fences_lang", act_hint: DANGEROUS_HINT },
-            { act_value: "replace_fences_lang", act_hint: DANGEROUS_HINT },
-            { act_value: "indent_all_fences", act_hint: DANGEROUS_HINT, act_hidden: !this.supportIndent }
-        ])
-    }
+    getDynamicActions = (anchorNode, meta) => this.i18n.fillActions([
+        { act_value: "toggle_state_fold", act_state: this.config.ENABLE_FOLD },
+        { act_value: "toggle_state_copy", act_state: this.config.ENABLE_COPY },
+        { act_value: "toggle_state_indent", act_state: this.enableIndent, act_hidden: !this.supportIndent },
+        { act_value: "toggle_state_auto_hide", act_state: this.config.AUTO_HIDE },
+        { act_value: "toggle_state_default_fold", act_state: this.config.DEFAULT_FOLD },
+        { act_value: "add_fences_lang" },
+        { act_value: "replace_fences_lang" },
+        { act_value: "indent_all_fences", act_hint: this.i18n.t("actHint.dangerous"), act_hidden: !this.supportIndent }
+    ])
 
     call = (action, meta) => {
-        const _rangeAllFences = rangeFunc => {
-            this.utils.entities.querySelectorAllInWrite(".md-fences[cid]").forEach(fence => {
-                const codeMirror = fence.querySelector(":scope > .CodeMirror")
-                if (!codeMirror) {
-                    const cid = fence.getAttribute("cid")
-                    File.editor.fences.addCodeBlock(cid)
-                }
-                rangeFunc(fence)
+        const _handleFence = async (filterFn, handleFn) => {
+            await this.utils.editCurrentFile(content => {
+                const lines = content.split(/\r?\n/g)
+                this.utils.parseMarkdownBlock(content)
+                    .filter(token => token.type === "fence")
+                    .filter(filterFn)
+                    .map(token => token.map[0])
+                    .forEach(idx => lines[idx] = handleFn(lines[idx].trimEnd()))
+                const joiner = content.includes("\r\n") ? "\r\n" : "\n"
+                return lines.join(joiner)
             })
         }
         const callMap = {
@@ -267,90 +308,58 @@ class fenceEnhancePlugin extends BasePlugin {
                 })
             },
             indent_all_fences: async () => {
-                const title = this.i18n.t("modal.indent_all_fences.title")
-                const label = this.i18n.t("modal.indent_all_fences.limitedFunctionality")
-                const op = { title, components: [{ label, type: "p" }] }
-                const { response } = await this.utils.dialog.modalAsync(op)
-                if (response === 1) {
-                    _rangeAllFences(this.indentFence)
+                const title = this.i18n.t("btn.hint.indent")
+                const message = this.i18n.t("modal.indent_all_fences.limitedFunctionality")
+                const op = { type: "warning", title, message }
+                const { response } = await this.utils.showMessageBox(op)
+                if (response === 0) {
+                    this.utils.entities.querySelectorAllInWrite(".md-fences[cid]").forEach(fence => {
+                        const codeMirror = fence.querySelector(":scope > .CodeMirror")
+                        if (!codeMirror) {
+                            const cid = fence.getAttribute("cid")
+                            File.editor.fences.addCodeBlock(cid)
+                        }
+                        this.indentFence(fence)
+                    })
                 }
             },
             add_fences_lang: async () => {
-                const title = this.i18n.t("modal.add_fences_lang.title")
-                const label = this.i18n.t("modal.add_fences_lang.targetLang")
-                const op = { title, components: [{ label, type: "input", value: "javascript" }] }
-                const { response, submit: [targetLang] } = await this.utils.dialog.modalAsync(op)
-                if (response === 0 || !targetLang) return
-                _rangeAllFences(fence => {
-                    const lang = fence.getAttribute("lang")
-                    if (lang) return
-                    const cid = fence.getAttribute("cid")
-                    File.editor.fences.focus(cid)
-                    const input = fence.querySelector(".ty-cm-lang-input")
-                    if (!input) return
-                    input.textContent = targetLang
-                    File.editor.fences.tryAddLangUndo(File.editor.getNode(cid), input)
-                })
+                const op = {
+                    title: this.i18n.t("modal.add_fences_lang.title"),
+                    schema: [{ fields: [{ key: "targetLang", type: "text", label: this.i18n.t("modal.add_fences_lang.targetLang") }] }],
+                    data: { targetLang: "javascript" },
+                }
+                const { response, data: { targetLang } } = await this.utils.formDialog.modal(op)
+                if (response === 1 && targetLang) {
+                    const filterFn = token => token.info === ""
+                    const handleFn = line => line.endsWith("```") ? line + targetLang : line
+                    await _handleFence(filterFn, handleFn)
+                    this.utils.notification.show(this.i18n._t("global", "success"))
+                }
             },
             replace_fences_lang: async () => {
-                const title = this.i18n.t("modal.replace_fences_lang.title")
-                const labelSource = this.i18n.t("modal.replace_fences_lang.sourceLang")
-                const labelTarget = this.i18n.t("modal.replace_fences_lang.targetLang")
-                const components = [
-                    { label: labelSource, type: "input", value: "js" },
-                    { label: labelTarget, type: "input", value: "javascript" }
+                const fields = [
+                    { key: "sourceLang", type: "text", label: this.i18n.t("modal.replace_fences_lang.sourceLang") },
+                    { key: "targetLang", type: "text", label: this.i18n.t("modal.replace_fences_lang.targetLang") },
                 ]
-                const op = { title, components }
-                const { response, submit: [waitToReplaceLang, replaceLang] } = await this.utils.dialog.modalAsync(op)
-                if (response === 0 || !waitToReplaceLang || !replaceLang) return
-                _rangeAllFences(fence => {
-                    const lang = fence.getAttribute("lang")
-                    if (lang && lang !== waitToReplaceLang) return
-                    const cid = fence.getAttribute("cid")
-                    File.editor.fences.focus(cid)
-                    const input = fence.querySelector(".ty-cm-lang-input")
-                    if (!input) return
-                    input.textContent = replaceLang
-                    File.editor.fences.tryAddLangUndo(File.editor.getNode(cid), input)
-                })
-            },
-            toggle_state_button_hint: async () => {
-                this.config.REMOVE_BUTTON_HINT = !this.config.REMOVE_BUTTON_HINT
-                await this.utils.reload()
+                const op = {
+                    title: this.i18n.t("modal.replace_fences_lang.title"),
+                    schema: [{ fields }],
+                    data: { sourceLang: "js", targetLang: "javascript" },
+                }
+                const { response, data } = await this.utils.formDialog.modal(op)
+                const { sourceLang, targetLang } = data
+                if (response === 1 && sourceLang && targetLang) {
+                    const regex = new RegExp(`(?<=\`\`\`)${sourceLang}$`)
+                    const filterFn = token => token.info === sourceLang
+                    const handleFn = line => line.replace(regex, targetLang)
+                    await _handleFence(filterFn, handleFn)
+                    this.utils.notification.show(this.i18n._t("global", "success"))
+                }
             },
         }
         const func = callMap[action]
         func && func()
-    }
-}
-
-class builder {
-    constructor(className, action, hint, iconClassName, enable, listener, extraFunc) {
-        this.className = className;
-        this.action = action;
-        this.hint = hint;
-        this.iconClassName = iconClassName;
-        this.enable = enable;
-        this.listener = listener;
-        this.extraFunc = extraFunc;
-    }
-
-    createButton(removeHint = false) {
-        const button = document.createElement("div")
-        button.classList.add("enhance-btn", this.className)
-        button.setAttribute("action", this.action)
-        if (!removeHint && this.hint) {
-            button.setAttribute("ty-hint", this.hint)
-        }
-        if (!this.enable) {
-            button.style.display = "none"
-        }
-
-        const span = document.createElement("span")
-        span.className = this.iconClassName
-        button.appendChild(span)
-
-        return button
     }
 }
 

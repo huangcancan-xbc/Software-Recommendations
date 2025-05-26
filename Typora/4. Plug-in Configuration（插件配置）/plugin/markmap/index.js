@@ -606,12 +606,13 @@ class tocMarkmap {
                 })
                 const settings = await this.utils.settings.readBasePluginSettings()
                 this.config = settings[fixedName]
-                this.utils.notification.show(this.i18n._t("global", "notification.settingsRestored"))
+                this.utils.notification.show(this.i18n._t("global", "success.restore"))
                 await this.setting()
             },
         }
 
-        const { response, values: result } = await this.utils.formDialog.modal(this.i18n.t("func.setting"), schema, data, action)
+        const op = { title: this.i18n.t("func.setting"), schema, data, action }
+        const { response, data: result } = await this.utils.formDialog.modal(op)
         if (response === 1) {
             result.DEFAULT_TOC_OPTIONS.color = str2Arr(result.DEFAULT_TOC_OPTIONS.color)
             Object.entries(result).forEach(([k, v]) => this.config[k] = v)
